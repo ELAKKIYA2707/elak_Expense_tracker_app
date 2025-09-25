@@ -6,111 +6,101 @@
 <title>Expense Tracker</title>
 <style>
   body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     margin: 0; padding: 0;
     background: url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
     background-size: cover;
     color: #333; min-height: 100vh;
+    padding-bottom: 70px; /* space for bottom nav */
   }
   .navbar {
     background: rgba(0, 0, 0, 0.8); padding: 14px;
     color: #fff; text-align: center;
-    font-size: 22px; font-weight: bold;
-    letter-spacing: 1px;
+    font-size: 20px; font-weight: bold;
     box-shadow: 0 4px 12px rgba(0,0,0,0.4);
   }
   .container {
-    max-width: 900px; margin: 20px auto;
-    background: #f7f9fb; padding: 20px;
-    border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    max-width: 900px; margin: 15px auto;
+    background: #f7f9fb; padding: 15px;
+    border-radius: 15px; box-shadow: 0 6px 15px rgba(0,0,0,0.25);
     text-align: center;
-    transition: all 0.3s ease-in-out;
   }
-  h1,h2,h3{ color:#2c3e50; margin-bottom:15px; }
+  h1,h2,h3{ color:#2c3e50; margin-bottom:15px; font-size:18px; }
   .btn {
-    display:inline-block; padding:12px 18px; margin:10px 6px;
+    display:block; padding:12px; margin:8px 0;
     border:none; border-radius:8px;
     background: linear-gradient(135deg,#3498db,#2980b9);
     color:#fff; font-size:15px; font-weight:bold;
-    cursor:pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
-    width: 90%;
-    max-width: 220px;
+    cursor:pointer; transition: all 0.3s;
+    width:100%;
   }
-  .btn:hover{
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-    background: linear-gradient(135deg,#2980b9,#1f618d);
-  }
+  .btn:hover{ opacity:0.9; }
   .logout-btn{ background: linear-gradient(135deg, #e67e22, #d35400); }
-  .logout-btn:hover{ background: linear-gradient(135deg,#d35400,#e67e22);}
-  input, select {
-    width: 95%; padding:12px; margin:8px 0;
-    border:1px solid #ddd; border-radius:8px; font-size:15px;
-    transition: all 0.3s ease;
-  }
-  input:focus, select:focus{ border-color:#3498db; outline:none; box-shadow:0 0 5px rgba(52,152,219,0.5);}
-  .balance { font-size:24px; margin:18px 0; font-weight:bold; color:#2c3e50; transition: all 0.5s ease;}
+  .balance { font-size:20px; margin:12px 0; font-weight:bold; color:#2c3e50; }
   .income, .expenses{
-    display:inline-block; width:45%; margin:15px 2%; padding:16px;
-    border-radius:10px; color:#fff; font-size:18px; font-weight:bold;
-    transition: all 0.5s ease;
+    display:block; margin:10px 0; padding:14px;
+    border-radius:10px; color:#fff; font-size:16px; font-weight:bold;
   }
   .income { background: linear-gradient(135deg,#1abc9c,#16a085); }
   .expenses { background: linear-gradient(135deg,#e67e22,#d35400); }
-  .transactions { margin-top:25px; overflow-x:auto; }
+
+  /* 📌 Transactions responsive */
+  .transactions { margin-top:20px; }
   .transactions table {
-    width:100%; border-collapse: collapse;
-    box-shadow:0 6px 15px rgba(0,0,0,0.1); border-radius:12px; overflow:hidden;
-    transition: all 0.3s ease;
-    font-size: 14px;
+    width:100%; border-collapse: collapse; display:none;
   }
-  .transactions th, .transactions td{ padding:10px; text-align:center; }
-  .transactions th{
-    background: linear-gradient(135deg,#2980b9,#1f618d); color:#fff; font-weight:600;
-  }
-  .transactions tr:nth-child(even){ background: #edf2f7; }
-  .transactions tr:hover{ background: #dbe9f5; transition:0.2s; }
-  .transactions .income-row{ color:#16a085; font-weight:bold; background: linear-gradient(90deg,#d0f0ed,#c2e6e8); }
-  .transactions .expense-row{ color:#d35400; font-weight:bold; background: linear-gradient(90deg,#fbe6d0,#f6e0c2); }
-  .transactions .delete-btn{
-    background:#e67e22; font-size:13px; padding:6px 10px; border-radius:6px;
-    color:#fff; border:none; cursor:pointer;
-  }
-  .transactions .delete-btn:hover{ background:#d35400; transform: scale(1.05);}
-  .modal{
-    display:none; position:fixed; z-index:10; left:0; top:0;
-    width:100%; height:100%; background-color: rgba(0,0,0,0.5);
-    justify-content:center; align-items:center; animation: fadeIn 0.3s ease;
-  }
-  .modal-content{
-    background:#f7f9fb; padding:20px; border-radius:12px; width:90%; max-width:400px;
-    box-shadow:0 6px 15px rgba(0,0,0,0.3);
-  }
-  .close{ float:right; font-size:22px; cursor:pointer; color:#555;}
-  .success-message{
-    background:#1abc9c; color:#fff; padding:10px; margin-top:12px;
-    border-radius:6px; display:none; font-weight:bold;
-  }
-  a{ color:#2980b9; text-decoration:none; cursor:pointer;}
-  a:hover{text-decoration:underline;}
+  .transactions th, .transactions td { padding:10px; text-align:center; }
 
-  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
-
-  /* 📱 Mobile responsive */
-  @media (max-width:768px){
-    .container { margin:15px; padding:18px; }
-    .navbar { font-size:20px; padding:12px; }
-    .income,.expenses{ width:100%; margin:10px 0; font-size:16px; }
-    .balance{ font-size:20px; }
-    .btn{ width: 100%; margin:8px 0; }
-    .transactions table{ font-size:13px; }
-    .transactions th, .transactions td{ padding:8px; }
+  /* Card view for mobile */
+  .transaction-card {
+    background:#fff; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.1);
+    margin:10px 0; padding:10px; text-align:left; font-size:14px;
   }
-  @media (max-width:480px){
-    h1,h2,h3{ font-size:18px; }
-    .balance{ font-size:18px; }
-    input,select{ font-size:14px; padding:10px; }
-    .btn{ font-size:14px; padding:10px; }
+  .transaction-card.income { border-left:5px solid #16a085; }
+  .transaction-card.expense { border-left:5px solid #d35400; }
+  .transaction-card strong { display:inline-block; width:90px; }
+  .delete-btn {
+    background:#e67e22; color:#fff; border:none; padding:6px 10px;
+    border-radius:6px; cursor:pointer; margin-top:6px;
+  }
+
+  /* 📌 Bottom Navigation */
+  .bottom-nav {
+    position:fixed; bottom:0; left:0; right:0;
+    background:#fff; display:flex; justify-content:space-around;
+    padding:10px 0; border-top:1px solid #ddd;
+    box-shadow:0 -2px 8px rgba(0,0,0,0.1);
+  }
+  .bottom-nav button {
+    flex:1; border:none; background:none; padding:6px;
+    font-size:14px; font-weight:bold; color:#2980b9; cursor:pointer;
+  }
+  .bottom-nav button:hover { color:#1f618d; }
+
+  /* 📌 Modal */
+  .modal {
+    display:none; position:fixed; z-index:10; top:0; left:0;
+    width:100%; height:100%; background:rgba(0,0,0,0.5);
+    justify-content:center; align-items:center;
+  }
+  .modal-content {
+    background:#fff; padding:20px; border-radius:10px;
+    width:90%; max-width:400px; box-shadow:0 6px 15px rgba(0,0,0,0.3);
+    text-align:left;
+  }
+  .close {
+    float:right; font-size:22px; cursor:pointer; color:#555;
+  }
+  input, select {
+    width:95%; padding:10px; margin:8px 0;
+    border:1px solid #ddd; border-radius:8px; font-size:15px;
+  }
+
+  @media(min-width:768px){
+    .btn{ display:inline-block; width:auto; margin:6px; }
+    .income, .expenses{ display:inline-block; width:45%; }
+    .transactions table{ display:table; }
+    .transaction-card{ display:none; }
   }
 </style>
 </head>
@@ -118,204 +108,125 @@
 
 <div class="navbar">Expense Tracker</div>
 
-<div class="container" id="landingPage">
-  <h1>Welcome to Expense Tracker App</h1>
-  <p>Track your income, manage your expenses, and stay in control of your finances.</p>
-  <button class="btn" onclick="goToLogin()">Login</button>
-  <button class="btn" onclick="goToRegister()">Register</button>
-</div>
-
-<div class="container" id="loginContainer" style="display:none;">
-  <h2>Login</h2>
-  <form id="loginForm">
-    <input type="text" id="loginUsername" placeholder="Username" required><br>
-    <input type="password" id="loginPassword" placeholder="Password" required><br>
-    <button type="submit" class="btn">Login</button>
-  </form>
-  <p>Don't have an account? <a href="#" onclick="showRegister()">Register here</a></p>
-  <button class="btn" onclick="goHome()">Go Back to Home</button>
-</div>
-
-<div class="container" id="registerContainer" style="display:none;">
-  <h2>Register</h2>
-  <form id="registerForm">
-    <input type="text" id="registerUsername" placeholder="Username" required><br>
-    <input type="password" id="registerPassword" placeholder="Password" required><br>
-    <button type="submit" class="btn">Register</button>
-  </form>
-  <p>Already have an account? <a href="#" onclick="showLogin()">Login here</a></p>
-  <button class="btn" onclick="goHome()">Go Back to Home</button>
-</div>
-
-<div class="container" id="dashboard" style="display:none;">
+<div class="container">
   <h2>Dashboard</h2>
-  <div class="balance">Balance: $<span id="balance">0.00</span></div>
-  <div class="income">Income: $<span id="income">0.00</span></div>
-  <div class="expenses">Expenses: $<span id="expenses">0.00</span></div>
-  <button class="btn" onclick="openAddModal('income')">Add Income</button>
-  <button class="btn" onclick="openAddModal('expense')">Add Expense</button>
-  <button class="btn logout-btn" onclick="logout()">Logout</button>
-  <button class="btn" onclick="goHome()">Go Back to Home</button>
-  <div id="successMessage" class="success-message"></div>
+  <div id="balance" class="balance">Balance: $0.00</div>
+  <div id="income" class="income">Income: $0.00</div>
+  <div id="expenses" class="expenses">Expenses: $0.00</div>
+
+  <button class="btn" onclick="openModal('incomeModal')">Add Income</button>
+  <button class="btn" onclick="openModal('expenseModal')">Add Expense</button>
+  <button class="btn logout-btn">Logout</button>
+
+  <h3>Recent Transactions</h3>
+  <div id="transactionCards"></div>
 
   <div class="transactions">
-    <h3>Recent Transactions</h3>
-    <table id="transactionTable">
+    <table>
       <thead>
-        <tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th><th>Action</th></tr>
+        <tr><th>Date</th><th>Type</th><th>Category</th><th>Amount</th><th>Action</th></tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="transactionTable"></tbody>
     </table>
   </div>
 </div>
 
-<div id="addModal" class="modal">
+<!-- 📌 Income Modal -->
+<div id="incomeModal" class="modal">
   <div class="modal-content">
-    <span class="close" onclick="closeAddModal()">&times;</span>
-    <h2 id="modalTitle"></h2>
-    <form id="transactionForm" onsubmit="event.preventDefault(); addTransaction();">
-      <input type="hidden" id="transactionType">
-      <label>Amount:</label><br>
-      <input type="number" id="amount" required step="0.01"><br>
-      <label>Category:</label><br>
-      <select id="category" required></select><br>
-      <label>Description:</label><br>
-      <input type="text" id="description"><br>
-      <label>Date:</label><br>
-      <input type="date" id="date" required><br>
-      <button type="submit" class="btn">Add</button>
-    </form>
+    <span class="close" onclick="closeModal('incomeModal')">&times;</span>
+    <h3>Add Income</h3>
+    <input type="text" id="incomeCategory" placeholder="Category" required>
+    <input type="number" id="incomeAmount" placeholder="Amount" required>
+    <button class="btn" onclick="addTransaction('income')">Save</button>
   </div>
 </div>
 
+<!-- 📌 Expense Modal -->
+<div id="expenseModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('expenseModal')">&times;</span>
+    <h3>Add Expense</h3>
+    <input type="text" id="expenseCategory" placeholder="Category" required>
+    <input type="number" id="expenseAmount" placeholder="Amount" required>
+    <button class="btn" onclick="addTransaction('expense')">Save</button>
+  </div>
+</div>
+
+<!-- 📌 Bottom Navigation -->
+<div class="bottom-nav">
+  <button onclick="scrollToTop()">🏠 Dashboard</button>
+  <button onclick="openModal('incomeModal')">➕ Add</button>
+  <button onclick="alert('Profile Page Coming Soon')">👤 Profile</button>
+  <button onclick="alert('Logged out')">🚪 Logout</button>
+</div>
+
 <script>
-let currentUser=null;
+  let balance = 0, income = 0, expenses = 0;
+  const balanceEl = document.getElementById("balance");
+  const incomeEl = document.getElementById("income");
+  const expensesEl = document.getElementById("expenses");
+  const transactionCards = document.getElementById("transactionCards");
+  const transactionTable = document.getElementById("transactionTable");
 
-function getUsers(){ return JSON.parse(localStorage.getItem('users')||'[]'); }
-function saveUsers(users){ localStorage.setItem('users',JSON.stringify(users)); }
-function getTransactions(){ return JSON.parse(localStorage.getItem('transactions')||'{}'); }
-function saveTransactions(tx){ localStorage.setItem('transactions',JSON.stringify(tx)); }
+  function openModal(id){ document.getElementById(id).style.display="flex"; }
+  function closeModal(id){ document.getElementById(id).style.display="none"; }
 
-function initializeSampleData(){
-  if(!localStorage.getItem('users')){
-    saveUsers([{id:1,username:'demo',password:'demo'}]);
-    saveTransactions({
-      1:[
-        {id:1,userId:1,type:'income',amount:1000,category:'Salary',description:'Monthly salary',date:'2023-10-01'},
-        {id:2,userId:1,type:'expense',amount:500,category:'Rent & Housing',description:'Monthly rent',date:'2023-10-02'},
-        {id:3,userId:1,type:'expense',amount:300,category:'Groceries',description:'Weekly groceries',date:'2023-10-03'},
-        {id:4,userId:1,type:'expense',amount:150,category:'Entertainment',description:'Movie tickets',date:'2023-10-05'}
-      ]
-    });
+  function updateUI(){
+    balanceEl.textContent = `Balance: $${balance.toFixed(2)}`;
+    incomeEl.textContent = `Income: $${income.toFixed(2)}`;
+    expensesEl.textContent = `Expenses: $${expenses.toFixed(2)}`;
   }
-}
 
-// Navigation
-function goToLogin(){ document.getElementById('landingPage').style.display='none'; document.getElementById('loginContainer').style.display='block'; }
-function goToRegister(){ document.getElementById('landingPage').style.display='none'; document.getElementById('registerContainer').style.display='block'; }
-function goHome(){ document.getElementById('landingPage').style.display='block'; document.getElementById('loginContainer').style.display='none'; document.getElementById('registerContainer').style.display='none'; document.getElementById('dashboard').style.display='none'; }
-function showRegister(){ document.getElementById('loginContainer').style.display='none'; document.getElementById('registerContainer').style.display='block'; }
-function showLogin(){ document.getElementById('registerContainer').style.display='none'; document.getElementById('loginContainer').style.display='block'; }
+  function addTransaction(type){
+    let category = type==="income" ? document.getElementById("incomeCategory").value : document.getElementById("expenseCategory").value;
+    let amount = type==="income" ? parseFloat(document.getElementById("incomeAmount").value) : parseFloat(document.getElementById("expenseAmount").value);
+    if(!category || isNaN(amount)) return;
 
-// Login/Register
-document.getElementById('loginForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const username=document.getElementById('loginUsername').value.trim();
-  const password=document.getElementById('loginPassword').value;
-  const user=getUsers().find(u=>u.username===username && u.password===password);
-  if(user){ currentUser=user; document.getElementById('loginContainer').style.display='none'; document.getElementById('dashboard').style.display='block'; updateDashboard(); }
-  else alert('Invalid credentials (try demo/demo)');
-});
+    let date = new Date().toISOString().split("T")[0];
 
-document.getElementById('registerForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const username=document.getElementById('registerUsername').value.trim();
-  const password=document.getElementById('registerPassword').value;
-  const users=getUsers();
-  if(users.find(u=>u.username===username)){ alert('Username already exists'); return; }
-  users.push({id:Date.now(),username,password}); saveUsers(users); alert('Registration successful! Please login.'); showLogin();
-});
+    if(type==="income"){ income += amount; balance += amount; }
+    else { expenses += amount; balance -= amount; }
 
-function logout(){ currentUser=null; goHome(); }
+    // Card (mobile)
+    let card = document.createElement("div");
+    card.className = `transaction-card ${type}`;
+    card.innerHTML = `
+      <p><strong>Date:</strong> ${date}</p>
+      <p><strong>Type:</strong> ${type}</p>
+      <p><strong>Category:</strong> ${category}</p>
+      <p><strong>Amount:</strong> ${type==="income"?"+":"-"}$${amount.toFixed(2)}</p>
+      <button class="delete-btn" onclick="deleteTransaction(this,'${type}',${amount})">Delete</button>
+    `;
+    transactionCards.prepend(card);
 
-// Dashboard & Transactions
-function updateDashboard(){
-  if(!currentUser) return;
-  const transactions=getTransactions()[currentUser.id]||[];
-  let income=0, expenses=0;
-  const tbody=document.querySelector('#transactionTable tbody');
-  tbody.innerHTML='';
+    // Table (desktop)
+    let row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${date}</td>
+      <td>${type}</td>
+      <td>${category}</td>
+      <td>${type==="income"?"+":"-"}$${amount.toFixed(2)}</td>
+      <td><button class="delete-btn" onclick="deleteTransaction(this,'${type}',${amount})">Delete</button></td>
+    `;
+    transactionTable.prepend(row);
 
-  transactions.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    updateUI();
+    closeModal(type+"Modal");
+  }
 
-  transactions.forEach(t=>{
-    if(t.type==='income') income+=Number(t.amount);
-    else expenses+=Number(t.amount);
+  function deleteTransaction(el,type,amount){
+    if(type==="income"){ income -= amount; balance -= amount; }
+    else { expenses -= amount; balance += amount; }
+    el.parentElement.parentElement.remove(); // table
+    if(el.closest(".transaction-card")) el.closest(".transaction-card").remove(); // card
+    updateUI();
+  }
 
-    const row=document.createElement('tr');
-    row.className=t.type==='income'?'income-row':'expense-row';
-    row.innerHTML=`<td>${t.date}</td><td>${t.type}</td><td>${t.category}</td><td>${t.description||''}</td><td>${t.type==='income'?'+':'-'}$${Number(t.amount).toFixed(2)}</td><td><button class="delete-btn" onclick="deleteTransaction(${t.id})">Delete</button></td>`;
-    tbody.appendChild(row);
-  });
+  function scrollToTop(){ window.scrollTo({top:0,behavior:"smooth"}); }
 
-  document.getElementById('income').textContent=income.toFixed(2);
-  document.getElementById('expenses').textContent=expenses.toFixed(2);
-  document.getElementById('balance').textContent=(income-expenses).toFixed(2);
-}
-
-// Modal
-function openAddModal(type){
-  if(!currentUser){ alert('Please login first.'); return; }
-  document.getElementById('addModal').style.display='flex';
-  document.getElementById('modalTitle').textContent='Add '+type.charAt(0).toUpperCase()+type.slice(1);
-  document.getElementById('transactionType').value=type;
-  const categories=type==='income'?['Salary','Bonus','Investment','Other']:['Rent & Housing','Groceries','Utilities','Transport','Entertainment','Health','Other'];
-  const categorySelect=document.getElementById('category');
-  categorySelect.innerHTML='';
-  categories.forEach(cat=>{ const opt=document.createElement('option'); opt.value=cat; opt.textContent=cat; categorySelect.appendChild(opt); });
-  document.getElementById('date').value=new Date().toISOString().split('T')[0];
-}
-function closeAddModal(){ document.getElementById('addModal').style.display='none'; document.getElementById('transactionForm').reset(); }
-
-function addTransaction(){
-  const type=document.getElementById('transactionType').value;
-  const amount=parseFloat(document.getElementById('amount').value);
-  const category=document.getElementById('category').value;
-  const description=document.getElementById('description').value.trim();
-  const date=document.getElementById('date').value;
-  if(!currentUser||isNaN(amount)||amount<=0||!category||!date){ alert('Fill all fields correctly'); return; }
-
-  const allTransactions=getTransactions();
-  if(!allTransactions[currentUser.id]) allTransactions[currentUser.id]=[];
-  allTransactions[currentUser.id].push({id:Date.now(),userId:currentUser.id,type,amount,category,description,date});
-  saveTransactions(allTransactions);
-  closeAddModal();
-  showSuccess(type==='income'?'Income added':'Expense added');
-  updateDashboard();
-}
-
-function deleteTransaction(id){
-  if(!currentUser) return;
-  const allTransactions=getTransactions();
-  allTransactions[currentUser.id]=allTransactions[currentUser.id].filter(t=>t.id!==id);
-  saveTransactions(allTransactions);
-  updateDashboard();
-}
-
-function showSuccess(msg){
-  const el=document.getElementById('successMessage');
-  el.textContent=msg;
-  el.style.display='block';
-  setTimeout(()=>{ el.style.display='none'; },3000);
-}
-
-// Initialize
-window.addEventListener('DOMContentLoaded',()=>{
-  initializeSampleData();
-  document.getElementById('date').value=new Date().toISOString().split('T')[0];
-});
+  updateUI();
 </script>
-
 </body>
   </html>
   
