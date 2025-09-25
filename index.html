@@ -49,7 +49,7 @@
   .transactions table {
     width:100%; border-collapse: collapse; display:none;
   }
-  .transactions th, .transactions td { padding:10px; text-align:center; }
+  .transactions th, .transactions td { padding:10px; text-align:center; border-bottom:1px solid #ddd; }
 
   /* Card view for mobile */
   .transaction-card {
@@ -58,7 +58,8 @@
   }
   .transaction-card.income { border-left:5px solid #16a085; }
   .transaction-card.expense { border-left:5px solid #d35400; }
-  .transaction-card strong { display:inline-block; width:90px; }
+  .transaction-card p { margin:5px 0; }
+  .transaction-card strong { display:inline-block; width:95px; }
   .delete-btn {
     background:#e67e22; color:#fff; border:none; padding:6px 10px;
     border-radius:6px; cursor:pointer; margin-top:6px;
@@ -72,28 +73,32 @@
     box-shadow:0 -2px 8px rgba(0,0,0,0.1);
   }
   .bottom-nav button {
-    flex:1; border:none; background:none; padding:6px;
+    flex:1; border:none; background:none; padding:8px;
     font-size:14px; font-weight:bold; color:#2980b9; cursor:pointer;
   }
   .bottom-nav button:hover { color:#1f618d; }
 
   /* 📌 Modal */
   .modal {
-    display:none; position:fixed; z-index:10; top:0; left:0;
-    width:100%; height:100%; background:rgba(0,0,0,0.5);
+    display:none; position:fixed; z-index:10;
+    left:0; top:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.5);
     justify-content:center; align-items:center;
   }
   .modal-content {
     background:#fff; padding:20px; border-radius:10px;
-    width:90%; max-width:400px; box-shadow:0 6px 15px rgba(0,0,0,0.3);
+    width:90%; max-width:400px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.3);
     text-align:left;
   }
-  .close {
-    float:right; font-size:22px; cursor:pointer; color:#555;
+  .modal-content input, .modal-content select {
+    width:100%; padding:10px; margin:8px 0;
+    border:1px solid #ccc; border-radius:6px;
   }
-  input, select {
-    width:95%; padding:10px; margin:8px 0;
-    border:1px solid #ddd; border-radius:8px; font-size:15px;
+  .close-btn {
+    background:#e74c3c; color:#fff; border:none;
+    padding:6px 12px; border-radius:6px;
+    float:right; cursor:pointer;
   }
 
   @media(min-width:768px){
@@ -110,46 +115,27 @@
 
 <div class="container">
   <h2>Dashboard</h2>
-  <div id="balance" class="balance">Balance: $0.00</div>
-  <div id="income" class="income">Income: $0.00</div>
-  <div id="expenses" class="expenses">Expenses: $0.00</div>
+  <div class="balance" id="balance">Balance: $0.00</div>
+  <div class="income" id="income">Income: $0.00</div>
+  <div class="expenses" id="expenses">Expenses: $0.00</div>
 
   <button class="btn" onclick="openModal('incomeModal')">Add Income</button>
   <button class="btn" onclick="openModal('expenseModal')">Add Expense</button>
   <button class="btn logout-btn">Logout</button>
 
   <h3>Recent Transactions</h3>
+
+  <!-- Mobile card style -->
   <div id="transactionCards"></div>
 
+  <!-- Desktop table -->
   <div class="transactions">
     <table>
       <thead>
-        <tr><th>Date</th><th>Type</th><th>Category</th><th>Amount</th><th>Action</th></tr>
+        <tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th><th>Action</th></tr>
       </thead>
       <tbody id="transactionTable"></tbody>
     </table>
-  </div>
-</div>
-
-<!-- 📌 Income Modal -->
-<div id="incomeModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('incomeModal')">&times;</span>
-    <h3>Add Income</h3>
-    <input type="text" id="incomeCategory" placeholder="Category" required>
-    <input type="number" id="incomeAmount" placeholder="Amount" required>
-    <button class="btn" onclick="addTransaction('income')">Save</button>
-  </div>
-</div>
-
-<!-- 📌 Expense Modal -->
-<div id="expenseModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('expenseModal')">&times;</span>
-    <h3>Add Expense</h3>
-    <input type="text" id="expenseCategory" placeholder="Category" required>
-    <input type="number" id="expenseAmount" placeholder="Amount" required>
-    <button class="btn" onclick="addTransaction('expense')">Save</button>
   </div>
 </div>
 
@@ -158,74 +144,104 @@
   <button onclick="scrollToTop()">🏠 Dashboard</button>
   <button onclick="openModal('incomeModal')">➕ Add</button>
   <button onclick="alert('Profile Page Coming Soon')">👤 Profile</button>
-  <button onclick="alert('Logged out')">🚪 Logout</button>
+  <button onclick="alert('Logout')">🚪 Logout</button>
+</div>
+
+<!-- 📌 Income Modal -->
+<div id="incomeModal" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('incomeModal')">X</button>
+    <h3>Add Income</h3>
+    <input type="date" id="incomeDate"/>
+    <input type="text" id="incomeCategory" placeholder="Category"/>
+    <input type="text" id="incomeDesc" placeholder="Description"/>
+    <input type="number" id="incomeAmount" placeholder="Amount"/>
+    <button class="btn" onclick="addTransaction('income')">Save</button>
+  </div>
+</div>
+
+<!-- 📌 Expense Modal -->
+<div id="expenseModal" class="modal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('expenseModal')">X</button>
+    <h3>Add Expense</h3>
+    <input type="date" id="expenseDate"/>
+    <input type="text" id="expenseCategory" placeholder="Category"/>
+    <input type="text" id="expenseDesc" placeholder="Description"/>
+    <input type="number" id="expenseAmount" placeholder="Amount"/>
+    <button class="btn" onclick="addTransaction('expense')">Save</button>
+  </div>
 </div>
 
 <script>
-  let balance = 0, income = 0, expenses = 0;
-  const balanceEl = document.getElementById("balance");
-  const incomeEl = document.getElementById("income");
-  const expensesEl = document.getElementById("expenses");
-  const transactionCards = document.getElementById("transactionCards");
-  const transactionTable = document.getElementById("transactionTable");
+  let transactions = [];
+  let income = 0, expenses = 0;
 
-  function openModal(id){ document.getElementById(id).style.display="flex"; }
-  function closeModal(id){ document.getElementById(id).style.display="none"; }
-
-  function updateUI(){
-    balanceEl.textContent = `Balance: $${balance.toFixed(2)}`;
-    incomeEl.textContent = `Income: $${income.toFixed(2)}`;
-    expensesEl.textContent = `Expenses: $${expenses.toFixed(2)}`;
-  }
+  function openModal(id){ document.getElementById(id).style.display='flex'; }
+  function closeModal(id){ document.getElementById(id).style.display='none'; }
 
   function addTransaction(type){
-    let category = type==="income" ? document.getElementById("incomeCategory").value : document.getElementById("expenseCategory").value;
-    let amount = type==="income" ? parseFloat(document.getElementById("incomeAmount").value) : parseFloat(document.getElementById("expenseAmount").value);
-    if(!category || isNaN(amount)) return;
+    const date = document.getElementById(type+"Date").value;
+    const category = document.getElementById(type+"Category").value;
+    const desc = document.getElementById(type+"Desc").value;
+    const amount = parseFloat(document.getElementById(type+"Amount").value);
 
-    let date = new Date().toISOString().split("T")[0];
+    if(!date || !category || !desc || !amount){ alert("Fill all fields!"); return; }
 
-    if(type==="income"){ income += amount; balance += amount; }
-    else { expenses += amount; balance -= amount; }
+    const transaction = {date, type, category, desc, amount};
+    transactions.push(transaction);
 
-    // Card (mobile)
-    let card = document.createElement("div");
-    card.className = `transaction-card ${type}`;
-    card.innerHTML = `
-      <p><strong>Date:</strong> ${date}</p>
-      <p><strong>Type:</strong> ${type}</p>
-      <p><strong>Category:</strong> ${category}</p>
-      <p><strong>Amount:</strong> ${type==="income"?"+":"-"}$${amount.toFixed(2)}</p>
-      <button class="delete-btn" onclick="deleteTransaction(this,'${type}',${amount})">Delete</button>
-    `;
-    transactionCards.prepend(card);
-
-    // Table (desktop)
-    let row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${date}</td>
-      <td>${type}</td>
-      <td>${category}</td>
-      <td>${type==="income"?"+":"-"}$${amount.toFixed(2)}</td>
-      <td><button class="delete-btn" onclick="deleteTransaction(this,'${type}',${amount})">Delete</button></td>
-    `;
-    transactionTable.prepend(row);
+    if(type==="income"){ income+=amount; }
+    else{ expenses+=amount; }
 
     updateUI();
     closeModal(type+"Modal");
   }
 
-  function deleteTransaction(el,type,amount){
-    if(type==="income"){ income -= amount; balance -= amount; }
-    else { expenses -= amount; balance += amount; }
-    el.parentElement.parentElement.remove(); // table
-    if(el.closest(".transaction-card")) el.closest(".transaction-card").remove(); // card
+  function deleteTransaction(index){
+    const t = transactions[index];
+    if(t.type==="income"){ income-=t.amount; } else{ expenses-=t.amount; }
+    transactions.splice(index,1);
     updateUI();
   }
 
-  function scrollToTop(){ window.scrollTo({top:0,behavior:"smooth"}); }
+  function updateUI(){
+    document.getElementById("income").innerText="Income: $"+income.toFixed(2);
+    document.getElementById("expenses").innerText="Expenses: $"+expenses.toFixed(2);
+    document.getElementById("balance").innerText="Balance: $"+(income-expenses).toFixed(2);
 
-  updateUI();
+    // Table
+    const table = document.getElementById("transactionTable");
+    table.innerHTML="";
+    transactions.forEach((t,i)=>{
+      const row=`<tr>
+        <td>${t.date}</td>
+        <td>${t.type}</td>
+        <td>${t.category}</td>
+        <td>${t.desc}</td>
+        <td>${t.type==="income"?"+":"-"}$${t.amount}</td>
+        <td><button class="delete-btn" onclick="deleteTransaction(${i})">Delete</button></td>
+      </tr>`;
+      table.innerHTML+=row;
+    });
+
+    // Cards
+    const cards=document.getElementById("transactionCards");
+    cards.innerHTML="";
+    transactions.forEach((t,i)=>{
+      const card=`<div class="transaction-card ${t.type}">
+        <p><strong>Date:</strong> ${t.date}</p>
+        <p><strong>Type:</strong> ${t.type}</p>
+        <p><strong>Category:</strong> ${t.category}</p>
+        <p><strong>Description:</strong> ${t.desc}</p>
+        <p><strong>Amount:</strong> ${t.type==="income"?"+":"-"}$${t.amount}</p>
+        <button class="delete-btn" onclick="deleteTransaction(${i})">Delete</button>
+      </div>`;
+      cards.innerHTML+=card;
+    });
+  }
+
+  function scrollToTop(){ window.scrollTo({top:0,behavior:'smooth'}); }
 </script>
 </body>
   </html>
