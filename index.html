@@ -58,7 +58,7 @@
   }
   .transaction-card.income { border-left:5px solid #16a085; }
   .transaction-card.expense { border-left:5px solid #d35400; }
-  .transaction-card strong { display:inline-block; width:90px; }
+  .transaction-card strong { display:inline-block; width:80px; }
   .delete-btn {
     background:#e67e22; color:#fff; border:none; padding:6px 10px;
     border-radius:6px; cursor:pointer; margin-top:6px;
@@ -72,29 +72,10 @@
     box-shadow:0 -2px 8px rgba(0,0,0,0.1);
   }
   .bottom-nav button {
-    flex:1; border:none; background:none; padding:6px;
+    flex:1; border:none; background:none; padding:8px;
     font-size:14px; font-weight:bold; color:#2980b9; cursor:pointer;
   }
   .bottom-nav button:hover { color:#1f618d; }
-
-  /* 📌 Modal */
-  .modal {
-    display:none; position:fixed; z-index:10; top:0; left:0;
-    width:100%; height:100%; background:rgba(0,0,0,0.5);
-    justify-content:center; align-items:center;
-  }
-  .modal-content {
-    background:#fff; padding:20px; border-radius:10px;
-    width:90%; max-width:400px; box-shadow:0 6px 15px rgba(0,0,0,0.3);
-    text-align:left;
-  }
-  .close {
-    float:right; font-size:22px; cursor:pointer; color:#555;
-  }
-  input, select {
-    width:95%; padding:10px; margin:8px 0;
-    border:1px solid #ddd; border-radius:8px; font-size:15px;
-  }
 
   @media(min-width:768px){
     .btn{ display:inline-block; width:auto; margin:6px; }
@@ -110,122 +91,49 @@
 
 <div class="container">
   <h2>Dashboard</h2>
-  <div id="balance" class="balance">Balance: $0.00</div>
-  <div id="income" class="income">Income: $0.00</div>
-  <div id="expenses" class="expenses">Expenses: $0.00</div>
+  <div class="balance">Balance: $120000.00</div>
+  <div class="income">Income: $120000.00</div>
+  <div class="expenses">Expenses: $0.00</div>
 
-  <button class="btn" onclick="openModal('incomeModal')">Add Income</button>
-  <button class="btn" onclick="openModal('expenseModal')">Add Expense</button>
+  <button class="btn">Add Income</button>
+  <button class="btn">Add Expense</button>
   <button class="btn logout-btn">Logout</button>
 
   <h3>Recent Transactions</h3>
-  <div id="transactionCards"></div>
 
+  <!-- Mobile card style -->
+  <div class="transaction-card income">
+    <p><strong>Date:</strong> 2025-09-25</p>
+    <p><strong>Type:</strong> Income</p>
+    <p><strong>Category:</strong> Salary</p>
+    <p><strong>Amount:</strong> +$120000</p>
+    <button class="delete-btn">Delete</button>
+  </div>
+
+  <!-- Desktop table -->
   <div class="transactions">
     <table>
       <thead>
         <tr><th>Date</th><th>Type</th><th>Category</th><th>Amount</th><th>Action</th></tr>
       </thead>
-      <tbody id="transactionTable"></tbody>
+      <tbody>
+        <tr class="income-row">
+          <td>2025-09-25</td><td>Income</td><td>Salary</td><td>+$120000</td>
+          <td><button class="delete-btn">Delete</button></td>
+        </tr>
+      </tbody>
     </table>
-  </div>
-</div>
-
-<!-- 📌 Income Modal -->
-<div id="incomeModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('incomeModal')">&times;</span>
-    <h3>Add Income</h3>
-    <input type="text" id="incomeCategory" placeholder="Category" required>
-    <input type="number" id="incomeAmount" placeholder="Amount" required>
-    <button class="btn" onclick="addTransaction('income')">Save</button>
-  </div>
-</div>
-
-<!-- 📌 Expense Modal -->
-<div id="expenseModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('expenseModal')">&times;</span>
-    <h3>Add Expense</h3>
-    <input type="text" id="expenseCategory" placeholder="Category" required>
-    <input type="number" id="expenseAmount" placeholder="Amount" required>
-    <button class="btn" onclick="addTransaction('expense')">Save</button>
   </div>
 </div>
 
 <!-- 📌 Bottom Navigation -->
 <div class="bottom-nav">
-  <button onclick="scrollToTop()">🏠 Dashboard</button>
-  <button onclick="openModal('incomeModal')">➕ Add</button>
-  <button onclick="alert('Profile Page Coming Soon')">👤 Profile</button>
-  <button onclick="alert('Logged out')">🚪 Logout</button>
+  <button onclick="alert('Go to Dashboard')">🏠 Dashboard</button>
+  <button onclick="alert('Add Transaction')">➕ Add</button>
+  <button onclick="alert('Profile Page')">👤 Profile</button>
+  <button onclick="alert('Logout')">🚪 Logout</button>
 </div>
 
-<script>
-  let balance = 0, income = 0, expenses = 0;
-  const balanceEl = document.getElementById("balance");
-  const incomeEl = document.getElementById("income");
-  const expensesEl = document.getElementById("expenses");
-  const transactionCards = document.getElementById("transactionCards");
-  const transactionTable = document.getElementById("transactionTable");
-
-  function openModal(id){ document.getElementById(id).style.display="flex"; }
-  function closeModal(id){ document.getElementById(id).style.display="none"; }
-
-  function updateUI(){
-    balanceEl.textContent = `Balance: $${balance.toFixed(2)}`;
-    incomeEl.textContent = `Income: $${income.toFixed(2)}`;
-    expensesEl.textContent = `Expenses: $${expenses.toFixed(2)}`;
-  }
-
-  function addTransaction(type){
-    let category = type==="income" ? document.getElementById("incomeCategory").value : document.getElementById("expenseCategory").value;
-    let amount = type==="income" ? parseFloat(document.getElementById("incomeAmount").value) : parseFloat(document.getElementById("expenseAmount").value);
-    if(!category || isNaN(amount)) return;
-
-    let date = new Date().toISOString().split("T")[0];
-
-    if(type==="income"){ income += amount; balance += amount; }
-    else { expenses += amount; balance -= amount; }
-
-    // Card (mobile)
-    let card = document.createElement("div");
-    card.className = `transaction-card ${type}`;
-    card.innerHTML = `
-      <p><strong>Date:</strong> ${date}</p>
-      <p><strong>Type:</strong> ${type}</p>
-      <p><strong>Category:</strong> ${category}</p>
-      <p><strong>Amount:</strong> ${type==="income"?"+":"-"}$${amount.toFixed(2)}</p>
-      <button class="delete-btn" onclick="deleteTransaction(this,'${type}',${amount})">Delete</button>
-    `;
-    transactionCards.prepend(card);
-
-    // Table (desktop)
-    let row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${date}</td>
-      <td>${type}</td>
-      <td>${category}</td>
-      <td>${type==="income"?"+":"-"}$${amount.toFixed(2)}</td>
-      <td><button class="delete-btn" onclick="deleteTransaction(this,'${type}',${amount})">Delete</button></td>
-    `;
-    transactionTable.prepend(row);
-
-    updateUI();
-    closeModal(type+"Modal");
-  }
-
-  function deleteTransaction(el,type,amount){
-    if(type==="income"){ income -= amount; balance -= amount; }
-    else { expenses -= amount; balance += amount; }
-    el.parentElement.parentElement.remove(); // table
-    if(el.closest(".transaction-card")) el.closest(".transaction-card").remove(); // card
-    updateUI();
-  }
-
-  function scrollToTop(){ window.scrollTo({top:0,behavior:"smooth"}); }
-
-  updateUI();
-</script>
 </body>
-</html>
+  </html>
+  
