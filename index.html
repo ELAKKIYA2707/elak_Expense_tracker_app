@@ -1,657 +1,943 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Expense Tracker</title>
-<style>
-  :root {
-    --primary-pink: #f8bbd9;
-    --pink-dark: #e91e63;
-    --pink-light: #fce4ec;
-    --pink-medium: #f48fb1;
-    --text-dark: #333;
-    --text-light: #fff;
-    --shadow: 0 4px 12px rgba(0,0,0,0.15);
-  }
-  
-  * {
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0; 
-    padding: 0;
-    background: url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
-    background-size: cover;
-    color: var(--text-dark); 
-    min-height: 100vh;
-    line-height: 1.6;
-  }
-  
-  .navbar {
-    background: rgba(0, 0, 0, 0.75); 
-    padding: 15px;
-    color: var(--text-light); 
-    text-align: center;
-    font-size: 22px; 
-    font-weight: bold;
-    letter-spacing: 1px;
-    box-shadow: var(--shadow);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  
-  .container {
-    max-width: 900px; 
-    margin: 30px auto;
-    background: #f7f9fb; 
-    padding: 25px;
-    border-radius: 15px; 
-    box-shadow: var(--shadow);
-    text-align: center;
-    transition: all 0.3s ease-in-out;
-  }
-  
-  h1, h2, h3 { 
-    color: var(--text-dark); 
-    margin-bottom: 15px; 
-  }
-  
-  .btn {
-    display: inline-block; 
-    padding: 12px 20px; 
-    margin: 10px 8px;
-    border: none; 
-    border-radius: 8px;
-    background: linear-gradient(135deg, var(--pink-medium), var(--pink-dark));
-    color: var(--text-light); 
-    font-size: 16px; 
-    font-weight: bold;
-    cursor: pointer; 
-    transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
-    width: 100%;
-    max-width: 200px;
-  }
-  
-  .btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-    background: linear-gradient(135deg, var(--pink-dark), var(--pink-medium));
-  }
-  
-  .logout-btn { 
-    background: linear-gradient(135deg, var(--pink-medium), var(--pink-dark)); 
-  }
-  
-  .logout-btn:hover { 
-    background: linear-gradient(135deg, var(--pink-dark), var(--pink-medium));
-  }
-  
-  input, select {
-    width: 100%; 
-    padding: 12px; 
-    margin: 8px 0;
-    border: 1px solid #ddd; 
-    border-radius: 8px; 
-    font-size: 15px;
-    transition: all 0.3s ease;
-  }
-  
-  input:focus, select:focus { 
-    border-color: var(--pink-medium); 
-    outline: none; 
-    box-shadow: 0 0 5px rgba(232, 30, 99, 0.5);
-  }
-  
-  .balance { 
-    font-size: 26px; 
-    margin: 25px 0; 
-    font-weight: bold; 
-    color: var(--text-dark); 
-    transition: all 0.5s ease;
-  }
-  
-  .income, .expenses {
-    display: block; 
-    width: 100%; 
-    margin: 15px 0; 
-    padding: 18px;
-    border-radius: 10px; 
-    color: var(--text-light); 
-    font-size: 20px; 
-    font-weight: bold;
-    transition: all 0.5s ease;
-  }
-  
-  .income { 
-    background: linear-gradient(135deg, #1abc9c, #16a085); 
-  }
-  
-  .expenses { 
-    background: linear-gradient(135deg, var(--pink-medium), var(--pink-dark)); 
-  }
-  
-  .transactions { 
-    margin-top: 25px; 
-    overflow-x: auto;
-  }
-  
-  .transactions table {
-    width: 100%; 
-    border-collapse: collapse;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1); 
-    border-radius: 12px; 
-    overflow: hidden;
-    transition: all 0.3s ease;
-    min-width: 600px;
-  }
-  
-  .transactions th, .transactions td { 
-    padding: 12px; 
-    text-align: center; 
-    transition: all 0.3s; 
-  }
-  
-  .transactions th {
-    background: linear-gradient(135deg, var(--pink-medium), var(--pink-dark)); 
-    color: var(--text-light); 
-    font-weight: 600;
-  }
-  
-  .transactions tr:nth-child(even) { 
-    background: #edf2f7; 
-  }
-  
-  .transactions tr:hover { 
-    transform: scale(1.02); 
-    background: #dbe9f5; 
-    transition: 0.2s; 
-  }
-  
-  .transactions .income-row { 
-    color: #16a085; 
-    font-weight: bold; 
-    background: linear-gradient(90deg, #d0f0ed, #c2e6e8); 
-  }
-  
-  .transactions .expense-row { 
-    color: var(--pink-dark); 
-    font-weight: bold; 
-    background: linear-gradient(90deg, var(--pink-light), #f6e0c2); 
-  }
-  
-  .transactions .delete-btn {
-    background: var(--pink-medium); 
-    font-size: 14px; 
-    padding: 6px 12px; 
-    border-radius: 6px;
-    transition: all 0.3s ease; 
-    color: var(--text-light); 
-    border: none; 
-    cursor: pointer;
-  }
-  
-  .transactions .delete-btn:hover { 
-    background: var(--pink-dark); 
-    transform: scale(1.1);
-  }
-  
-  .modal {
-    display: none; 
-    position: fixed; 
-    z-index: 10; 
-    left: 0; 
-    top: 0;
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0,0,0,0.5);
-    justify-content: center; 
-    align-items: center; 
-    animation: fadeIn 0.3s ease;
-    padding: 15px;
-  }
-  
-  .modal-content {
-    background: #f7f9fb; 
-    padding: 25px; 
-    border-radius: 12px; 
-    width: 100%;
-    max-width: 420px;
-    box-shadow: 0 6px 15px rgba(0,0,0,0.3); 
-    transform: translateY(-50px); 
-    animation: slideDown 0.3s forwards;
-  }
-  
-  .close { 
-    float: right; 
-    font-size: 22px; 
-    cursor: pointer; 
-    color: #555;
-  }
-  
-  .success-message {
-    background: #1abc9c; 
-    color: var(--text-light); 
-    padding: 12px; 
-    margin-top: 18px;
-    border-radius: 6px; 
-    display: none; 
-    font-weight: bold; 
-    transition: all 0.5s ease;
-  }
-  
-  a { 
-    color: var(--pink-dark); 
-    text-decoration: none; 
-    cursor: pointer;
-  }
-  
-  a:hover {
-    text-decoration: underline;
-  }
-  
-  .button-group {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin: 15px 0;
-  }
-  
-  .stats-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin: 20px 0;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-  @keyframes fadeIn { 
-    from { opacity: 0; } 
-    to { opacity: 1; } 
-  }
-  
-  @keyframes slideDown { 
-    from { transform: translateY(-50px); opacity: 0; } 
-    to { transform: translateY(0); opacity: 1; } 
-  }
+        :root {
+            --primary-pink: #f8bbd9;
+            --pink-dark: #e91e63;
+            --pink-light: #fce4ec;
+            --pink-medium: #f48fb1;
+            --text-dark: #333;
+            --text-light: #fff;
+            --shadow: 0 4px 12px rgba(0,0,0,0.15);
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --error: #F44336;
+        }
 
-  @media (min-width: 768px) {
-    .income, .expenses {
-      display: inline-block;
-      width: 45%;
-      margin: 15px 2%;
-    }
-    
-    .stats-container {
-      flex-direction: row;
-      justify-content: space-between;
-    }
-    
-    .btn {
-      width: auto;
-    }
-    
-    .button-group {
-      flex-wrap: nowrap;
-    }
-  }
-</style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .landing-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+        }
+
+        .landing-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            color: var(--text-light);
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .hero-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-content {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .hero-content h1 {
+            color: var(--pink-dark);
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+
+        .hero-content p {
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .auth-form {
+            display: none;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .auth-tab.active {
+            background: var(--pink-medium);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 10px 8px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--pink-medium), var(--pink-dark));
+            color: var(--text-light);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, var(--pink-dark), var(--pink-medium));
+        }
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            width: 200px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .feature i {
+            font-size: 2.5rem;
+            color: var(--pink-dark);
+            margin-bottom: 10px;
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .balance {
+            font-size: 26px;
+            margin: 25px 0;
+            font-weight: bold;
+            color: var(--text-dark);
+            transition: all 0.5s ease;
+        }
+
+        .income, .expenses {
+            display: block;
+            width: 100%;
+            margin: 15px 0;
+            padding: 18px;
+            border-radius: 10px;
+            color: var(--text-light);
+            font-size: 20px;
+            font-weight: bold;
+            transition: all 0.5s ease;
+        }
+
+        .income {
+            background: linear-gradient(135deg, #1abc9c, #16a085);
+        }
+
+        .expenses {
+            background: linear-gradient(135deg, var(--pink-medium), var(--pink-dark));
+        }
+
+        .transactions {
+            margin-top: 25px;
+            overflow-x: auto;
+        }
+
+        .transactions table {
+            width: 100%;
+            border-collapse: collapse;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            min-width: 600px;
+        }
+
+        .transactions th, .transactions td {
+            padding: 12px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .transactions th {
+            background: linear-gradient(135deg, var(--pink-medium), var(--pink-dark));
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .transactions tr:nth-child(even) {
+            background: #edf2f7;
+        }
+
+        .transactions tr:hover {
+            transform: scale(1.02);
+            background: #dbe9f5;
+            transition: 0.2s;
+        }
+
+        .transactions .income-row {
+            color: #16a085;
+            font-weight: bold;
+            background: linear-gradient(90deg, #d0f0ed, #c2e6e8);
+        }
+
+        .transactions .expense-row {
+            color: var(--pink-dark);
+            font-weight: bold;
+            background: linear-gradient(90deg, var(--pink-light), #f6e0c2);
+        }
+
+        .transactions .delete-btn {
+            background: var(--pink-medium);
+            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            color: var(--text-light);
+            border: none;
+            cursor: pointer;
+        }
+
+        .transactions .delete-btn:hover {
+            background: var(--pink-dark);
+            transform: scale(1.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: #f7f9fb;
+            padding: 25px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            transform: translateY(-50px);
+            animation: slideDown 0.3s forwards;
+        }
+
+        .close {
+            float: right;
+            font-size: 22px;
+            cursor: pointer;
+            color: #555;
+        }
+
+        .success-message {
+            background: var(--success);
+            color: var(--text-light);
+            padding: 12px;
+            margin-top: 18px;
+            border-radius: 6px;
+            display: none;
+            font-weight: bold;
+            transition: all 0.5s ease;
+        }
+
+        .error-message {
+            background: var(--error);
+            color: var(--text-light);
+            padding: 12px;
+            margin-top: 18px;
+            border-radius: 6px;
+            display: none;
+            font-weight: bold;
+            transition: all 0.5s ease;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .stats-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: var(--pink-dark);
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, var(--pink-medium), var(--pink-dark));
+        }
+
+        .switch-user-btn {
+            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+        }
+
+        .switch-user-btn:hover {
+            background: linear-gradient(135deg, #7b1fa2, #6a1b9a);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #78909c, #546e7a);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #546e7a, #455a64);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (min-width: 768px) {
+            .income, .expenses {
+                display: inline-block;
+                width: 45%;
+                margin: 15px 2%;
+            }
+
+            .stats-container {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            .btn {
+                width: auto;
+            }
+
+            .button-group {
+                flex-wrap: nowrap;
+            }
+
+            .features {
+                justify-content: space-between;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Landing Page -->
+    <div class="landing-page" id="landingPage">
+        <div class="navbar">Expense Tracker</div>
+        
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1>Welcome to Expense Tracker</h1>
+                <p>Track your income, manage your expenses, and stay in control of your finances with our easy-to-use application.</p>
+                
+                <div class="auth-tabs">
+                    <div class="auth-tab active" onclick="showAuthForm('login')">Login</div>
+                    <div class="auth-tab" onclick="showAuthForm('register')">Register</div>
+                </div>
+                
+                <div class="auth-form active" id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" placeholder="Enter your username">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter your password">
+                    </div>
+                    <button class="btn" onclick="login()">Login</button>
+                    <p style="margin-top: 15px; font-size: 14px;">Demo credentials: demo / demo</p>
+                </div>
+                
+                <div class="auth-form" id="registerForm">
+                    <div class="form-group">
+                        <label for="newUsername">Username</label>
+                        <input type="text" id="newUsername" placeholder="Choose a username">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">Password</label>
+                        <input type="password" id="newPassword" placeholder="Create a password">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" placeholder="Confirm your password">
+                    </div>
+                    <button class="btn" onclick="register()">Register</button>
+                </div>
+                
+                <div class="features">
+                    <div class="feature">
+                        <i class="fas fa-chart-pie"></i>
+                        <h3>Track Expenses</h3>
+                        <p>Monitor your spending habits</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-wallet"></i>
+                        <h3>Manage Budget</h3>
+                        <p>Set and track your budget goals</p>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Visual Reports</h3>
+                        <p>See your financial trends</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="navbar">Expense Tracker</div>
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="navbar">Expense Tracker</div>
+        
+        <div class="container">
+            <div class="user-info">Logged in as: <span id="currentUserName"></span></div>
+            <h2>Dashboard</h2>
+            <div class="balance">Balance: $<span id="balance">0.00</span></div>
+            <div class="stats-container">
+                <div class="income">Income: $<span id="income">0.00</span></div>
+                <div class="expenses">Expenses: $<span id="expenses">0.00</span></div>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn" onclick="openAddModal('income')">Add Income</button>
+                <button class="btn" onclick="openAddModal('expense')">Add Expense</button>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn switch-user-btn" onclick="showSwitchUserModal()">Switch User</button>
+                <button class="btn logout-btn" onclick="logout()">Logout</button>
+            </div>
+            
+            <div id="successMessage" class="success-message"></div>
+            <div id="errorMessage" class="error-message"></div>
 
-<div class="container" id="landingPage">
-  <h1>Welcome to Expense Tracker App</h1>
-  <p>Track your income, manage your expenses, and stay in control of your finances.</p>
-  <div class="button-group">
-    <button class="btn" onclick="goToLogin()">Login</button>
-    <button class="btn" onclick="goToRegister()">Register</button>
-  </div>
-</div>
+            <div class="transactions">
+                <h3>Recent Transactions</h3>
+                <table id="transactionTable">
+                    <thead>
+                        <tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th><th>Action</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-<div class="container" id="loginContainer" style="display:none;">
-  <h2>Login</h2>
-  <form id="loginForm">
-    <input type="text" id="loginUsername" placeholder="Username" required><br>
-    <input type="password" id="loginPassword" placeholder="Password" required><br>
-    <button type="submit" class="btn">Login</button>
-  </form>
-  <p>Don't have an account? <a href="#" onclick="showRegister()">Register here</a></p>
-  <button class="btn" onclick="goHome()">Go Back to Home</button>
-</div>
+    <!-- Add Transaction Modal -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddModal()">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <form id="transactionForm" onsubmit="event.preventDefault(); addTransaction();">
+                <input type="hidden" id="transactionType">
+                <div class="form-group">
+                    <label>Amount:</label>
+                    <input type="number" id="amount" required step="0.01" min="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Category:</label>
+                    <select id="category" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Description:</label>
+                    <input type="text" id="description">
+                </div>
+                <div class="form-group">
+                    <label>Date:</label>
+                    <input type="date" id="date" required>
+                </div>
+                <button type="submit" class="btn">Add</button>
+            </form>
+        </div>
+    </div>
 
-<div class="container" id="registerContainer" style="display:none;">
-  <h2>Register</h2>
-  <form id="registerForm">
-    <input type="text" id="registerUsername" placeholder="Username" required><br>
-    <input type="password" id="registerPassword" placeholder="Password" required><br>
-    <button type="submit" class="btn">Register</button>
-  </form>
-  <p>Already have an account? <a href="#" onclick="showLogin()">Login here</a></p>
-  <button class="btn" onclick="goHome()">Go Back to Home</button>
-</div>
+    <!-- Switch User Modal -->
+    <div id="switchUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSwitchUserModal()">&times;</span>
+            <h2>Switch User</h2>
+            <p>Select a user to switch to:</p>
+            <div class="user-list" id="userList"></div>
+            <button class="btn btn-secondary" onclick="closeSwitchUserModal()">Cancel</button>
+        </div>
+    </div>
 
-<div class="container" id="dashboard" style="display:none;">
-  <h2>Dashboard</h2>
-  <div class="balance">Balance: $<span id="balance">0.00</span></div>
-  <div class="stats-container">
-    <div class="income">Income: $<span id="income">0.00</span></div>
-    <div class="expenses">Expenses: $<span id="expenses">0.00</span></div>
-  </div>
-  <div class="button-group">
-    <button class="btn" onclick="openAddModal('income')">Add Income</button>
-    <button class="btn" onclick="openAddModal('expense')">Add Expense</button>
-  </div>
-  <div class="button-group">
-    <button class="btn logout-btn" onclick="logout()">Logout</button>
-    <button class="btn" onclick="goHome()">Go Back to Home</button>
-  </div>
-  <div id="successMessage" class="success-message"></div>
+    <script>
+        // Local Storage Keys
+        const STORAGE_KEYS = {
+            USERS: 'expenseTracker_users',
+            TRANSACTIONS: 'expenseTracker_transactions',
+            CURRENT_USER: 'expenseTracker_currentUser',
+            USER_LOGIN_HISTORY: 'expenseTracker_userLoginHistory'
+        };
 
-  <div class="transactions">
-    <h3>Recent Transactions</h3>
-    <table id="transactionTable">
-      <thead>
-        <tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th><th>Action</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</div>
+        let currentUser = null;
 
-<div id="addModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeAddModal()">&times;</span>
-    <h2 id="modalTitle"></h2>
-    <form id="transactionForm" onsubmit="event.preventDefault(); addTransaction();">
-      <input type="hidden" id="transactionType">
-      <label>Amount:</label><br>
-      <input type="number" id="amount" required step="0.01"><br>
-      <label>Category:</label><br>
-      <select id="category" required></select><br>
-      <label>Description:</label><br>
-      <input type="text" id="description"><br>
-      <label>Date:</label><br>
-      <input type="date" id="date" required><br>
-      <button type="submit" class="btn">Add</button>
-    </form>
-  </div>
-</div>
+        // Initialize app
+        function initializeApp() {
+            // Try to restore current user from localStorage
+            const savedUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showDashboard();
+            }
+            
+            // Initialize sample data if needed
+            initializeSampleData();
+            
+            // Set today's date as default in the form
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        }
 
-<script>
-// Local Storage Keys
-const STORAGE_KEYS = {
-  USERS: 'expenseTracker_users',
-  TRANSACTIONS: 'expenseTracker_transactions',
-  CURRENT_USER: 'expenseTracker_currentUser'
-};
+        // Local Storage Functions
+        function getUsers() { 
+            return JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]'); 
+        }
 
-let currentUser = null;
+        function saveUsers(users) { 
+            localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users)); 
+        }
 
-// Initialize app
-function initializeApp() {
-  // Try to restore current user from localStorage
-  const savedUser = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
-  if (savedUser) {
-    currentUser = JSON.parse(savedUser);
-    showDashboard();
-  }
-  
-  // Initialize sample data if needed
-  initializeSampleData();
-  
-  // Set today's date as default in the form
-  document.getElementById('date').value = new Date().toISOString().split('T')[0];
-}
+        function getTransactions() { 
+            return JSON.parse(localStorage.getItem(STORAGE_KEYS.TRANSACTIONS) || '{}'); 
+        }
 
-// Local Storage Functions
-function getUsers() { 
-  return JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]'); 
-}
+        function saveTransactions(tx) { 
+            localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(tx)); 
+        }
 
-function saveUsers(users) { 
-  localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users)); 
-}
+        function getLoginHistory() {
+            return JSON.parse(localStorage.getItem(STORAGE_KEYS.USER_LOGIN_HISTORY) || '{}');
+        }
 
-function getTransactions() { 
-  return JSON.parse(localStorage.getItem(STORAGE_KEYS.TRANSACTIONS) || '{}'); 
-}
+        function saveLoginHistory(history) {
+            localStorage.setItem(STORAGE_KEYS.USER_LOGIN_HISTORY, JSON.stringify(history));
+        }
 
-function saveTransactions(tx) { 
-  localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(tx)); 
-}
+        function saveCurrentUser(user) {
+            if (user) {
+                localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+                
+                // Update login history
+                const history = getLoginHistory();
+                history[user.id] = {
+                    username: user.username,
+                    lastLogin: new Date().toISOString()
+                };
+                saveLoginHistory(history);
+            } else {
+                localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+            }
+        }
 
-function saveCurrentUser(user) {
-  if (user) {
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
-  } else {
-    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
-  }
-}
+        function initializeSampleData() {
+            if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
+                const sampleUsers = [
+                    { id: 1, username: 'demo', password: 'demo' },
+                    { id: 2, username: 'alice', password: 'password123' },
+                    { id: 3, username: 'bob', password: 'password123' }
+                ];
+                
+                const sampleTransactions = {
+                    1: [
+                        { id: 1, userId: 1, type: 'income', amount: 1000, category: 'Salary', description: 'Monthly salary', date: '2023-10-01' },
+                        { id: 2, userId: 1, type: 'expense', amount: 500, category: 'Rent & Housing', description: 'Monthly rent', date: '2023-10-02' },
+                        { id: 3, userId: 1, type: 'expense', amount: 300, category: 'Groceries', description: 'Weekly groceries', date: '2023-10-03' },
+                        { id: 4, userId: 1, type: 'expense', amount: 150, category: 'Entertainment', description: 'Movie tickets', date: '2023-10-05' }
+                    ],
+                    2: [
+                        { id: 5, userId: 2, type: 'income', amount: 1200, category: 'Salary', description: 'Monthly salary', date: '2023-10-01' },
+                        { id: 6, userId: 2, type: 'expense', amount: 400, category: 'Rent & Housing', description: 'Monthly rent', date: '2023-10-02' }
+                    ],
+                    3: [
+                        { id: 7, userId: 3, type: 'income', amount: 800, category: 'Salary', description: 'Monthly salary', date: '2023-10-01' },
+                        { id: 8, userId: 3, type: 'expense', amount: 200, category: 'Groceries', description: 'Weekly groceries', date: '2023-10-03' }
+                    ]
+                };
+                
+                const sampleLoginHistory = {
+                    1: { username: 'demo', lastLogin: new Date().toISOString() },
+                    2: { username: 'alice', lastLogin: new Date(Date.now() - 86400000).toISOString() }, // 1 day ago
+                    3: { username: 'bob', lastLogin: new Date(Date.now() - 172800000).toISOString() } // 2 days ago
+                };
+                
+                saveUsers(sampleUsers);
+                saveTransactions(sampleTransactions);
+                saveLoginHistory(sampleLoginHistory);
+            }
+        }
 
-function initializeSampleData() {
-  if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
-    const sampleUsers = [
-      { id: 1, username: 'demo', password: 'demo' }
-    ];
-    
-    const sampleTransactions = {
-      1: [
-        { id: 1, userId: 1, type: 'income', amount: 1000, category: 'Salary', description: 'Monthly salary', date: '2023-10-01' },
-        { id: 2, userId: 1, type: 'expense', amount: 500, category: 'Rent & Housing', description: 'Monthly rent', date: '2023-10-02' },
-        { id: 3, userId: 1, type: 'expense', amount: 300, category: 'Groceries', description: 'Weekly groceries', date: '2023-10-03' },
-        { id: 4, userId: 1, type: 'expense', amount: 150, category: 'Entertainment', description: 'Movie tickets', date: '2023-10-05' }
-      ]
-    };
-    
-    saveUsers(sampleUsers);
-    saveTransactions(sampleTransactions);
-  }
-}
+        // Authentication Functions
+        function showAuthForm(formType) {
+            document.querySelectorAll('.auth-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+            
+            if (formType === 'login') {
+                document.querySelector('.auth-tab:nth-child(1)').classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.querySelector('.auth-tab:nth-child(2)').classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
+            }
+        }
 
-// Navigation Functions
-function goToLogin() { 
-  hideAllContainers(); 
-  document.getElementById('loginContainer').style.display = 'block'; 
-}
+        function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const user = getUsers().find(u => u.username === username && u.password === password);
+            
+            if (user) { 
+                currentUser = user;
+                saveCurrentUser(user);
+                showDashboard();
+            } else {
+                showError('Invalid credentials (try demo/demo)');
+            }
+        }
 
-function goToRegister() { 
-  hideAllContainers(); 
-  document.getElementById('registerContainer').style.display = 'block'; 
-}
+        function register() {
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const users = getUsers();
+            
+            if (username.length < 3) {
+                showError('Username must be at least 3 characters long');
+                return;
+            }
+            
+            if (password.length < 4) {
+                showError('Password must be at least 4 characters long');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError('Passwords do not match');
+                return;
+            }
+            
+            if (users.find(u => u.username === username)) { 
+                showError('Username already exists'); 
+                return; 
+            }
+            
+            const newUser = { id: Date.now(), username, password };
+            users.push(newUser);
+            saveUsers(users);
+            
+            // Initialize empty transactions for new user
+            const transactions = getTransactions();
+            transactions[newUser.id] = [];
+            saveTransactions(transactions);
+            
+            showSuccess('Registration successful! Please login.');
+            setTimeout(() => {
+                showAuthForm('login');
+            }, 1500);
+        }
 
-function goHome() { 
-  hideAllContainers(); 
-  document.getElementById('landingPage').style.display = 'block'; 
-}
+        function logout() { 
+            currentUser = null;
+            saveCurrentUser(null);
+            document.getElementById('landingPage').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+        }
 
-function showRegister() { 
-  hideAllContainers(); 
-  document.getElementById('registerContainer').style.display = 'block'; 
-}
+        // Dashboard Functions
+        function showDashboard() {
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('currentUserName').textContent = currentUser.username;
+            updateDashboard();
+        }
 
-function showLogin() { 
-  hideAllContainers(); 
-  document.getElementById('loginContainer').style.display = 'block'; 
-}
+        function updateDashboard() {
+            if (!currentUser) return;
+            
+            const transactions = getTransactions()[currentUser.id] || [];
+            let income = 0, expenses = 0;
+            const tbody = document.querySelector('#transactionTable tbody');
+            tbody.innerHTML = '';
 
-function showDashboard() {
-  hideAllContainers();
-  document.getElementById('dashboard').style.display = 'block';
-  updateDashboard();
-}
+            // Sort transactions by date (newest first)
+            transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-function hideAllContainers() {
-  const containers = document.querySelectorAll('.container');
-  containers.forEach(container => {
-    container.style.display = 'none';
-  });
-}
+            // Process transactions
+            transactions.forEach(t => {
+                if (t.type === 'income') income += Number(t.amount);
+                else expenses += Number(t.amount);
 
-// Authentication Functions
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const username = document.getElementById('loginUsername').value.trim();
-  const password = document.getElementById('loginPassword').value;
-  const user = getUsers().find(u => u.username === username && u.password === password);
-  
-  if (user) { 
-    currentUser = user;
-    saveCurrentUser(user);
-    showDashboard();
-  } else {
-    alert('Invalid credentials (try demo/demo)');
-  }
-});
+                const row = document.createElement('tr');
+                row.className = t.type === 'income' ? 'income-row' : 'expense-row';
+                row.innerHTML = `
+                    <td>${t.date}</td>
+                    <td>${t.type}</td>
+                    <td>${t.category}</td>
+                    <td>${t.description || ''}</td>
+                    <td>${t.type === 'income' ? '+' : '-'}$${Number(t.amount).toFixed(2)}</td>
+                    <td><button class="delete-btn" onclick="deleteTransaction(${t.id})">Delete</button></td>
+                `;
+                tbody.appendChild(row);
+            });
 
-document.getElementById('registerForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const username = document.getElementById('registerUsername').value.trim();
-  const password = document.getElementById('registerPassword').value;
-  const users = getUsers();
-  
-  if (users.find(u => u.username === username)) { 
-    alert('Username already exists'); 
-    return; 
-  }
-  
-  const newUser = { id: Date.now(), username, password };
-  users.push(newUser);
-  saveUsers(users);
-  alert('Registration successful! Please login.');
-  showLogin();
-});
+            // Update UI
+            document.getElementById('income').textContent = income.toFixed(2);
+            document.getElementById('expenses').textContent = expenses.toFixed(2);
+            document.getElementById('balance').textContent = (income - expenses).toFixed(2);
+        }
 
-function logout() { 
-  currentUser = null;
-  saveCurrentUser(null);
-  goHome(); 
-}
+        // Modal Functions
+        function openAddModal(type) {
+            if (!currentUser) { 
+                showError('Please login first.'); 
+                return; 
+            }
+            
+            document.getElementById('addModal').style.display = 'flex';
+            document.getElementById('modalTitle').textContent = 'Add ' + type.charAt(0).toUpperCase() + type.slice(1);
+            document.getElementById('transactionType').value = type;
+            
+            // Set up categories based on transaction type
+            const categories = type === 'income' 
+                ? ['Salary', 'Bonus', 'Investment', 'Other'] 
+                : ['Rent & Housing', 'Groceries', 'Utilities', 'Transport', 'Entertainment', 'Health', 'Other'];
+            
+            const categorySelect = document.getElementById('category');
+            categorySelect.innerHTML = '';
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                categorySelect.appendChild(opt);
+            });
+            
+            // Set default date to today
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+        }
 
-// Dashboard & Transactions Functions
-function updateDashboard() {
-  if (!currentUser) return;
-  
-  const transactions = getTransactions()[currentUser.id] || [];
-  let income = 0, expenses = 0;
-  const tbody = document.querySelector('#transactionTable tbody');
-  tbody.innerHTML = '';
+        function closeAddModal() { 
+            document.getElementById('addModal').style.display = 'none'; 
+            document.getElementById('transactionForm').reset(); 
+        }
 
-  // Sort transactions by date (newest first)
-  transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+        function addTransaction() {
+            const type = document.getElementById('transactionType').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const category = document.getElementById('category').value;
+            const description = document.getElementById('description').value.trim();
+            const date = document.getElementById('date').value;
+            
+            if (!currentUser || isNaN(amount) || amount <= 0 || !category || !date) { 
+                showError('Please fill all fields correctly'); 
+                return; 
+            }
 
-  // Process transactions
-  transactions.forEach(t => {
-    if (t.type === 'income') income += Number(t.amount);
-    else expenses += Number(t.amount);
+            const allTransactions = getTransactions();
+            if (!allTransactions[currentUser.id]) allTransactions[currentUser.id] = [];
+            
+            allTransactions[currentUser.id].push({
+                id: Date.now(),
+                userId: currentUser.id,
+                type,
+                amount,
+                category,
+                description,
+                date
+            });
+            
+            saveTransactions(allTransactions);
+            closeAddModal();
+            showSuccess(type === 'income' ? 'Income added successfully!' : 'Expense added successfully!');
+            updateDashboard();
+        }
 
-    const row = document.createElement('tr');
-    row.className = t.type === 'income' ? 'income-row' : 'expense-row';
-    row.innerHTML = `
-      <td>${t.date}</td>
-      <td>${t.type}</td>
-      <td>${t.category}</td>
-      <td>${t.description || ''}</td>
-      <td>${t.type === 'income' ? '+' : '-'}$${Number(t.amount).toFixed(2)}</td>
-      <td><button class="delete-btn" onclick="deleteTransaction(${t.id})">Delete</button></td>
-    `;
-    tbody.appendChild(row);
-  });
+        function deleteTransaction(id) {
+            if (!currentUser) return;
+            
+            if (confirm('Are you sure you want to delete this transaction?')) {
+                const allTransactions = getTransactions();
+                allTransactions[currentUser.id] = allTransactions[currentUser.id].filter(t => t.id !== id);
+                saveTransactions(allTransactions);
+                updateDashboard();
+                showSuccess('Transaction deleted successfully!');
+            }
+        }
 
-  // Update UI
-  document.getElementById('income').textContent = income.toFixed(2);
-  document.getElementById('expenses').textContent = expenses.toFixed(2);
-  document.getElementById('balance').textContent = (income - expenses).toFixed(2);
-}
+        function showSuccess(msg) {
+            const el = document.getElementById('successMessage');
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 3000);
+        }
 
-// Modal Functions
-function openAddModal(type) {
-  if (!currentUser) { 
-    alert('Please login first.'); 
-    return; 
-  }
-  
-  document.getElementById('addModal').style.display = 'flex';
-  document.getElementById('modalTitle').textContent = 'Add ' + type.charAt(0).toUpperCase() + type.slice(1);
-  document.getElementById('transactionType').value = type;
-  
-  // Set up categories based on transaction type
-  const categories = type === 'income' 
-    ? ['Salary', 'Bonus', 'Investment', 'Other'] 
-    : ['Rent & Housing', 'Groceries', 'Utilities', 'Transport', 'Entertainment', 'Health', 'Other'];
-  
-  const categorySelect = document.getElementById('category');
-  categorySelect.innerHTML = '';
-  categories.forEach(cat => {
-    const opt = document.createElement('option');
-    opt.value = cat;
-    opt.textContent = cat;
-    categorySelect.appendChild(opt);
-  });
-  
-  // Set default date to today
-  document.getElementById('date').value = new Date().toISOString().split('T')[0];
-}
+        function showError(msg) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 3000);
+        }
 
-function closeAddModal() { 
-  document.getElementById('addModal').style.display = 'none'; 
-  document.getElementById('transactionForm').reset(); 
-}
+        // User Switching Functions
+        function showSwitchUserModal() {
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+            
+            const users = getUsers();
+            const loginHistory = getLoginHistory();
+            
+            users.forEach(user => {
+                const userItem = document.createElement('div');
+                userItem.className = 'user-item';
+                if (currentUser && user.id === currentUser.id) {
+                    userItem.classList.add('active');
+                }
+                
+                const lastLogin = loginHistory[user.id] ? 
+                    new Date(loginHistory[user.id].lastLogin).toLocaleDateString() : 'Never';
+                
+                userItem.innerHTML = `
+                    <div><strong>${user.username}</strong></div>
+                    <div style="font-size: 0.8em; color: #666;">Last login: ${lastLogin}</div>
+                `;
+                
+                userItem.onclick = () => switchUser(user);
+                userList.appendChild(userItem);
+            });
+            
+            document.getElementById('switchUserModal').style.display = 'flex';
+        }
 
-function addTransaction() {
-  const type = document.getElementById('transactionType').value;
-  const amount = parseFloat(document.getElementById('amount').value);
-  const category = document.getElementById('category').value;
-  const description = document.getElementById('description').value.trim();
-  const date = document.getElementById('date').value;
-  
-  if (!currentUser || isNaN(amount) || amount <= 0 || !category || !date) { 
-    alert('Please fill all fields correctly'); 
-    return; 
-  }
+        function closeSwitchUserModal() {
+            document.getElementById('switchUserModal').style.display = 'none';
+        }
 
-  const allTransactions = getTransactions();
-  if (!allTransactions[currentUser.id]) allTransactions[currentUser.id] = [];
-  
-  allTransactions[currentUser.id].push({
-    id: Date.now(),
-    userId: currentUser.id,
-    type,
-    amount,
-    category,
-    description,
-    date
-  });
-  
-  saveTransactions(allTransactions);
-  closeAddModal();
-  showSuccess(type === 'income' ? 'Income added successfully!' : 'Expense added successfully!');
-  updateDashboard();
-}
+        function switchUser(user) {
+            currentUser = user;
+            saveCurrentUser(user);
+            closeSwitchUserModal();
+            showDashboard();
+            showSuccess(`Switched to user: ${user.username}`);
+        }
 
-function deleteTransaction(id) {
-  if (!currentUser) return;
-  
-  const allTransactions = getTransactions();
-  allTransactions[currentUser.id] = allTransactions[currentUser.id].filter(t => t.id !== id);
-  saveTransactions(allTransactions);
-  updateDashboard();
-}
-
-function showSuccess(msg) {
-  const el = document.getElementById('successMessage');
-  el.textContent = msg;
-  el.style.display = 'block';
-  setTimeout(() => { el.style.display = 'none'; }, 3000);
-}
-
-// Initialize the app when the page loads
-window.addEventListener('DOMContentLoaded', initializeApp);
-</script>
-
+        // Initialize the app when the page loads
+        window.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
 </body>
 </html>
