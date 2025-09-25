@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Expense Tracker</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0;
+    background: url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
+    background-size: cover;
+    color: #333; min-height: 100vh;
+  }
+  .navbar {
+    background: rgba(0, 0, 0, 0.75); padding: 18px;
+    color: #fff; text-align: center;
+    font-size: 26px; font-weight: bold;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  }
+  .container {
+    max-width: 900px; margin: 50px auto;
+    background: #f7f9fb; padding: 35px;
+    border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+  }
+  h1,h2,h3{ color:#2c3e50; margin-bottom:15px; }
+  .btn {
+    display:inline-block; padding:12px 20px; margin:10px 8px;
+    border:none; border-radius:8px;
+    background: linear-gradient(135deg,#3498db,#2980b9);
+    color:#fff; font-size:16px; font-weight:bold;
+    cursor:pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+  }
+  .btn:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    background: linear-gradient(135deg,#2980b9,#1f618d);
+  }
+  .logout-btn{ background: linear-gradient(135deg, #e67e22, #d35400); }
+  .logout-btn:hover{ background: linear-gradient(135deg,#d35400,#e67e22);}
+  input, select {
+    width: 90%; padding:12px; margin:8px 0;
+    border:1px solid #ddd; border-radius:8px; font-size:15px;
+    transition: all 0.3s ease;
+  }
+  input:focus, select:focus{ border-color:#3498db; outline:none; box-shadow:0 0 5px rgba(52,152,219,0.5);}
+  .balance { font-size:26px; margin:25px 0; font-weight:bold; color:#2c3e50; transition: all 0.5s ease;}
+  .income, .expenses{
+    display:inline-block; width:45%; margin:15px 2%; padding:18px;
+    border-radius:10px; color:#fff; font-size:20px; font-weight:bold;
+    transition: all 0.5s ease;
+  }
+  .income { background: linear-gradient(135deg,#1abc9c,#16a085); }
+  .expenses { background: linear-gradient(135deg,#e67e22,#d35400); }
+  .transactions { margin-top:25px; }
+  .transactions table {
+    width:100%; border-collapse: collapse;
+    box-shadow:0 6px 15px rgba(0,0,0,0.1); border-radius:12px; overflow:hidden;
+    transition: all 0.3s ease;
+  }
+  .transactions th, .transactions td{ padding:12px; text-align:center; transition: all 0.3s; }
+  .transactions th{
+    background: linear-gradient(135deg,#2980b9,#1f618d); color:#fff; font-weight:600;
+  }
+  .transactions tr:nth-child(even){ background: #edf2f7; }
+  .transactions tr:hover{ transform: scale(1.02); background: #dbe9f5; transition:0.2s; }
+  .transactions .income-row{ color:#16a085; font-weight:bold; background: linear-gradient(90deg,#d0f0ed,#c2e6e8); }
+  .transactions .expense-row{ color:#d35400; font-weight:bold; background: linear-gradient(90deg,#fbe6d0,#f6e0c2); }
+  .transactions .delete-btn{
+    background:#e67e22; font-size:14px; padding:6px 12px; border-radius:6px;
+    transition: all 0.3s ease; color:#fff; border:none; cursor:pointer;
+  }
+  .transactions .delete-btn:hover{ background:#d35400; transform: scale(1.1);}
+  .modal{
+    display:none; position:fixed; z-index:10; left:0; top:0;
+    width:100%; height:100%; background-color: rgba(0,0,0,0.5);
+    justify-content:center; align-items:center; animation: fadeIn 0.3s ease;
+  }
+  .modal-content{
+    background:#f7f9fb; padding:30px; border-radius:12px; width:420px; max-width:95%;
+    box-shadow:0 6px 15px rgba(0,0,0,0.3); transform: translateY(-50px); animation: slideDown 0.3s forwards;
+  }
+  .close{ float:right; font-size:22px; cursor:pointer; color:#555;}
+  .success-message{
+    background:#1abc9c; color:#fff; padding:12px; margin-top:18px;
+    border-radius:6px; display:none; font-weight:bold; transition: all 0.5s ease;
+  }
+  a{ color:#2980b9; text-decoration:none; cursor:pointer;}
+  a:hover{text-decoration:underline;}
+
+  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+  @keyframes slideDown { from{transform: translateY(-50px); opacity:0;} to{transform: translateY(0); opacity:1;} }
+
+  @media (max-width:700px){
+    .income,.expenses{ width:100%; margin:10px 0; }
+    .transactions table,.transactions th,.transactions td{ font-size:14px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="navbar">Expense Tracker</div>
+
+<div class="container" id="landingPage">
+  <h1>Welcome to Expense Tracker App</h1>
+  <p>Track your income, manage your expenses, and stay in control of your finances.</p>
+  <button class="btn" onclick="goToLogin()">Login</button>
+  <button class="btn" onclick="goToRegister()">Register</button>
+</div>
+
+<div class="container" id="loginContainer" style="display:none;">
+  <h2>Login</h2>
+  <form id="loginForm">
+    <input type="text" id="loginUsername" placeholder="Username" required><br>
+    <input type="password" id="loginPassword" placeholder="Password" required><br>
+    <button type="submit" class="btn">Login</button>
+  </form>
+  <p>Don't have an account? <a href="#" onclick="showRegister()">Register here</a></p>
+  <button class="btn" onclick="goHome()">Go Back to Home</button>
+</div>
+
+<div class="container" id="registerContainer" style="display:none;">
+  <h2>Register</h2>
+  <form id="registerForm">
+    <input type="text" id="registerUsername" placeholder="Username" required><br>
+    <input type="password" id="registerPassword" placeholder="Password" required><br>
+    <button type="submit" class="btn">Register</button>
+  </form>
+  <p>Already have an account? <a href="#" onclick="showLogin()">Login here</a></p>
+  <button class="btn" onclick="goHome()">Go Back to Home</button>
+</div>
+
+<div class="container" id="dashboard" style="display:none;">
+  <h2>Dashboard</h2>
+  <div class="balance">Balance: $<span id="balance">0.00</span></div>
+  <div class="income">Income: $<span id="income">0.00</span></div>
+  <div class="expenses">Expenses: $<span id="expenses">0.00</span></div>
+  <button class="btn" onclick="openAddModal('income')">Add Income</button>
+  <button class="btn" onclick="openAddModal('expense')">Add Expense</button>
+  <button class="btn logout-btn" onclick="logout()">Logout</button>
+  <button class="btn" onclick="goHome()">Go Back to Home</button>
+  <div id="successMessage" class="success-message"></div>
+
+  <div class="transactions">
+    <h3>Recent Transactions</h3>
+    <table id="transactionTable">
+      <thead>
+        <tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount</th><th>Action</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="addModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeAddModal()">&times;</span>
+    <h2 id="modalTitle"></h2>
+    <form id="transactionForm" onsubmit="event.preventDefault(); addTransaction();">
+      <input type="hidden" id="transactionType">
+      <label>Amount:</label><br>
+      <input type="number" id="amount" required step="0.01"><br>
+      <label>Category:</label><br>
+      <select id="category" required></select><br>
+      <label>Description:</label><br>
+      <input type="text" id="description"><br>
+      <label>Date:</label><br>
+      <input type="date" id="date" required><br>
+      <button type="submit" class="btn">Add</button>
+    </form>
+  </div>
+</div>
+
+<script>
+let currentUser=null;
+
+function getUsers(){ return JSON.parse(localStorage.getItem('users')||'[]'); }
+function saveUsers(users){ localStorage.setItem('users',JSON.stringify(users)); }
+function getTransactions(){ return JSON.parse(localStorage.getItem('transactions')||'{}'); }
+function saveTransactions(tx){ localStorage.setItem('transactions',JSON.stringify(tx)); }
+
+function initializeSampleData(){
+  if(!localStorage.getItem('users')){
+    saveUsers([{id:1,username:'demo',password:'demo'}]);
+    saveTransactions({
+      1:[
+        {id:1,userId:1,type:'income',amount:1000,category:'Salary',description:'Monthly salary',date:'2023-10-01'},
+        {id:2,userId:1,type:'expense',amount:500,category:'Rent & Housing',description:'Monthly rent',date:'2023-10-02'},
+        {id:3,userId:1,type:'expense',amount:300,category:'Groceries',description:'Weekly groceries',date:'2023-10-03'},
+        {id:4,userId:1,type:'expense',amount:150,category:'Entertainment',description:'Movie tickets',date:'2023-10-05'}
+      ]
+    });
+  }
+}
+
+// Navigation
+function goToLogin(){ document.getElementById('landingPage').style.display='none'; document.getElementById('loginContainer').style.display='block'; }
+function goToRegister(){ document.getElementById('landingPage').style.display='none'; document.getElementById('registerContainer').style.display='block'; }
+function goHome(){ document.getElementById('landingPage').style.display='block'; document.getElementById('loginContainer').style.display='none'; document.getElementById('registerContainer').style.display='none'; document.getElementById('dashboard').style.display='none'; }
+function showRegister(){ document.getElementById('loginContainer').style.display='none'; document.getElementById('registerContainer').style.display='block'; }
+function showLogin(){ document.getElementById('registerContainer').style.display='none'; document.getElementById('loginContainer').style.display='block'; }
+
+// Login/Register
+document.getElementById('loginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const username=document.getElementById('loginUsername').value.trim();
+  const password=document.getElementById('loginPassword').value;
+  const user=getUsers().find(u=>u.username===username && u.password===password);
+  if(user){ currentUser=user; document.getElementById('loginContainer').style.display='none'; document.getElementById('dashboard').style.display='block'; updateDashboard(); }
+  else alert('Invalid credentials (try demo/demo)');
+});
+
+document.getElementById('registerForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const username=document.getElementById('registerUsername').value.trim();
+  const password=document.getElementById('registerPassword').value;
+  const users=getUsers();
+  if(users.find(u=>u.username===username)){ alert('Username already exists'); return; }
+  users.push({id:Date.now(),username,password}); saveUsers(users); alert('Registration successful! Please login.'); showLogin();
+});
+
+function logout(){ currentUser=null; goHome(); }
+
+// Dashboard & Transactions
+function updateDashboard(){
+  if(!currentUser) return;
+  const transactions=getTransactions()[currentUser.id]||[];
+  let income=0, expenses=0;
+  const tbody=document.querySelector('#transactionTable tbody');
+  tbody.innerHTML='';
+
+  transactions.sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+  transactions.forEach(t=>{
+    if(t.type==='income') income+=Number(t.amount);
+    else expenses+=Number(t.amount);
+
+    const row=document.createElement('tr');
+    row.className=t.type==='income'?'income-row':'expense-row';
+    row.innerHTML=`<td>${t.date}</td><td>${t.type}</td><td>${t.category}</td><td>${t.description||''}</td><td>${t.type==='income'?'+':'-'}$${Number(t.amount).toFixed(2)}</td><td><button class="delete-btn" onclick="deleteTransaction(${t.id})">Delete</button></td>`;
+    tbody.appendChild(row);
+  });
+
+  document.getElementById('income').textContent=income.toFixed(2);
+  document.getElementById('expenses').textContent=expenses.toFixed(2);
+  document.getElementById('balance').textContent=(income-expenses).toFixed(2);
+}
+
+// Modal
+function openAddModal(type){
+  if(!currentUser){ alert('Please login first.'); return; }
+  document.getElementById('addModal').style.display='flex';
+  document.getElementById('modalTitle').textContent='Add '+type.charAt(0).toUpperCase()+type.slice(1);
+  document.getElementById('transactionType').value=type;
+  const categories=type==='income'?['Salary','Bonus','Investment','Other']:['Rent & Housing','Groceries','Utilities','Transport','Entertainment','Health','Other'];
+  const categorySelect=document.getElementById('category');
+  categorySelect.innerHTML='';
+  categories.forEach(cat=>{ const opt=document.createElement('option'); opt.value=cat; opt.textContent=cat; categorySelect.appendChild(opt); });
+  document.getElementById('date').value=new Date().toISOString().split('T')[0];
+}
+function closeAddModal(){ document.getElementById('addModal').style.display='none'; document.getElementById('transactionForm').reset(); }
+
+function addTransaction(){
+  const type=document.getElementById('transactionType').value;
+  const amount=parseFloat(document.getElementById('amount').value);
+  const category=document.getElementById('category').value;
+  const description=document.getElementById('description').value.trim();
+  const date=document.getElementById('date').value;
+  if(!currentUser||isNaN(amount)||amount<=0||!category||!date){ alert('Fill all fields correctly'); return; }
+
+  const allTransactions=getTransactions();
+  if(!allTransactions[currentUser.id]) allTransactions[currentUser.id]=[];
+  allTransactions[currentUser.id].push({id:Date.now(),userId:currentUser.id,type,amount,category,description,date});
+  saveTransactions(allTransactions);
+  closeAddModal();
+  showSuccess(type==='income'?'Income added':'Expense added');
+  updateDashboard();
+}
+
+function deleteTransaction(id){
+  if(!currentUser) return;
+  const allTransactions=getTransactions();
+  allTransactions[currentUser.id]=allTransactions[currentUser.id].filter(t=>t.id!==id);
+  saveTransactions(allTransactions);
+  updateDashboard();
+}
+
+function showSuccess(msg){
+  const el=document.getElementById('successMessage');
+  el.textContent=msg;
+  el.style.display='block';
+  setTimeout(()=>{ el.style.display='none'; },3000);
+}
+
+// Initialize
+window.addEventListener('DOMContentLoaded',()=>{
+  initializeSampleData();
+  document.getElementById('date').value=new Date().toISOString().split('T')[0];
+});
+</script>
+
+</body>
+</html>
