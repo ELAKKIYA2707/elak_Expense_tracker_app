@@ -37,15 +37,18 @@
   .btn:hover{ opacity:0.9; }
   .logout-btn{ background: linear-gradient(135deg, #e67e22, #d35400); }
   .balance { font-size:20px; margin:12px 0; font-weight:bold; color:#2c3e50; }
+
+  /* 📌 Income & Expenses */
   .income, .expenses{
     display:block; margin:10px 0; padding:14px;
     border-radius:10px; color:#fff; font-size:16px; font-weight:bold;
+    width:100%; box-sizing: border-box;
   }
   .income { background: linear-gradient(135deg,#1abc9c,#16a085); }
-  .expenses { background: linear-gradient(135deg,#e67e22,#d35400); }
+  .expenses { background: linear-gradient(135deg,#ff80ab,#e75480); } /* pink */
 
   /* 📌 Transactions responsive */
-  .transactions { margin-top:20px; }
+  .transactions { margin-top:20px; overflow-x: auto; }
   .transactions table {
     width:100%; border-collapse: collapse; display:none;
   }
@@ -57,7 +60,7 @@
     margin:10px 0; padding:10px; text-align:left; font-size:14px;
   }
   .transaction-card.income { border-left:5px solid #16a085; }
-  .transaction-card.expense { border-left:5px solid #d35400; }
+  .transaction-card.expense { border-left:5px solid #e75480; }
   .transaction-card p { margin:5px 0; }
   .transaction-card strong { display:inline-block; width:95px; }
   .delete-btn {
@@ -244,5 +247,4 @@
   function scrollToTop(){ window.scrollTo({top:0,behavior:'smooth'}); }
 </script>
 </body>
-  </html>
-  
+</html>
