@@ -1,706 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expense Tracker</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #e91e63;
-            --primary-dark: #c2185b;
-            --primary-light: #f8bbd9;
-            --secondary: #9c27b0;
-            --success: #4caf50;
-            --danger: #f44336;
-            --warning: #ff9800;
-            --info: #2196f3;
-            --light: #f5f5f5;
-            --dark: #333;
-            --text: #212121;
-            --text-light: #757575;
-            --bg: #fafafa;
-            --card-bg: #ffffff;
-            --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            --radius: 12px;
-            --transition: all 0.3s ease;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            overflow-x: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* App Header */
-        .app-header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 15px 20px;
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .app-header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 15px;
-        }
-
-        .icon-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            transition: var(--transition);
-        }
-
-        .icon-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            padding-bottom: 80px; /* Space for bottom nav */
-        }
-
-        /* Dashboard Summary */
-        .summary-cards {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .summary-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            text-align: center;
-            transition: var(--transition);
-        }
-
-        .summary-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .summary-card.income {
-            border-left: 4px solid var(--success);
-        }
-
-        .summary-card.expenses {
-            border-left: 4px solid var(--danger);
-        }
-
-        .summary-card.balance {
-            grid-column: 1 / span 2;
-            border-left: 4px solid var(--primary);
-        }
-
-        .summary-card h3 {
-            font-size: 0.9rem;
-            color: var(--text-light);
-            margin-bottom: 5px;
-        }
-
-        .summary-card .amount {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        /* Quick Actions */
-        .quick-actions {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 25px;
-        }
-
-        .action-btn {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: var(--card-bg);
-            border: none;
-            border-radius: var(--radius);
-            padding: 15px 10px;
-            margin: 0 5px;
-            box-shadow: var(--shadow);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .action-btn:hover {
-            background: var(--primary-light);
-            transform: translateY(-3px);
-        }
-
-        .action-btn i {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
-            color: var(--primary);
-        }
-
-        .action-btn span {
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        /* Transactions List */
-        .section-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 25px 0 15px;
-        }
-
-        .section-title h2 {
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        .view-all {
-            color: var(--primary);
-            font-size: 0.9rem;
-            text-decoration: none;
-        }
-
-        .transactions-list {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-        }
-
-        .transaction-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            transition: var(--transition);
-        }
-
-        .transaction-item:last-child {
-            border-bottom: none;
-        }
-
-        .transaction-item:hover {
-            background: #f9f9f9;
-        }
-
-        .transaction-info {
-            display: flex;
-            align-items: center;
-        }
-
-        .transaction-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            font-size: 1.2rem;
-        }
-
-        .transaction-icon.income {
-            background: rgba(76, 175, 80, 0.2);
-            color: var(--success);
-        }
-
-        .transaction-icon.expense {
-            background: rgba(244, 67, 54, 0.2);
-            color: var(--danger);
-        }
-
-        .transaction-details h4 {
-            font-size: 1rem;
-            margin-bottom: 3px;
-        }
-
-        .transaction-details p {
-            font-size: 0.8rem;
-            color: var(--text-light);
-        }
-
-        .transaction-amount {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .transaction-amount.income {
-            color: var(--success);
-        }
-
-        .transaction-amount.expense {
-            color: var(--danger);
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--card-bg);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-light);
-            font-size: 0.8rem;
-            transition: var(--transition);
-            flex: 1;
-            padding: 5px 0;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-        }
-
-        .nav-item i {
-            font-size: 1.2rem;
-            margin-bottom: 3px;
-        }
-
-        /* Modals */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            width: 100%;
-            max-width: 500px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            animation: slideUp 0.3s ease;
-            overflow: hidden;
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h2 {
-            font-size: 1.3rem;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .modal-body {
-            padding: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            width: 100%;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-        }
-
-        .btn-secondary {
-            background: #e0e0e0;
-            color: var(--text);
-        }
-
-        .btn-secondary:hover {
-            background: #d5d5d5;
-        }
-
-        /* Auth Screens */
-        .auth-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-        }
-
-        .auth-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 30px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: var(--shadow);
-        }
-
-        .auth-card h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: var(--primary);
-        }
-
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 25px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .auth-tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: var(--transition);
-        }
-
-        .auth-tab.active {
-            border-bottom-color: var(--primary);
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .auth-form {
-            display: none;
-        }
-
-        .auth-form.active {
-            display: block;
-        }
-
-        .switch-auth {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 0.9rem;
-        }
-
-        .switch-auth a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(30px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* Responsive Design */
-        @media (min-width: 768px) {
-            .summary-cards {
-                grid-template-columns: 1fr 1fr 1fr;
-            }
-            
-            .summary-card.balance {
-                grid-column: auto;
-            }
-            
-            .quick-actions {
-                justify-content: flex-start;
-                gap: 15px;
-            }
-            
-            .action-btn {
-                flex: 0 0 calc(25% - 15px);
-            }
-            
-            .bottom-nav {
-                display: none;
-            }
-            
-            .main-content {
-                padding-bottom: 20px;
-            }
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Toast Notifications */
-        .toast {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--dark);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            animation: slideUp 0.3s ease;
-        }
-
-        .toast.success {
-            background: var(--success);
-        }
-
-        .toast.error {
-            background: var(--danger);
-        }
-
-        .toast i {
-            margin-right: 10px;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-light);
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: #ddd;
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Expense Tracker — Working App</title>
+<style>
+:root{
+  --card-bg: rgba(255,255,255,0.95);
+  --accent: #00695c;
+  --muted: #6b7280;
+  --income: #16a34a;
+  --expense: #dc2626;
+  --glass: rgba(255,255,255,0.85);
+  --shadow: 0 6px 18px rgba(2,6,23,0.12);
+  font-family: Inter, "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(135deg,#e6fffa 0%, #f0f9ff 100%);color:#111}
+.landing {min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+  background-image: url('https://images.unsplash.com/photo-1593934872490-b1ebd8f1a5a4?q=80&w=1600&auto=format&fit=crop&ixlib=rb-4.0.3&s=2e152b85c1fc0d8e8e68e71b5ebd9b99');
+  background-size: cover; background-position:center; color: white; text-align:center;
+}
+.landing .card {background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.25)); padding:36px; border-radius:14px; max-width:720px; box-shadow: 0 10px 40px rgba(2,6,23,0.45);}
+.landing h1 { font-size:2.2rem; margin:0 0 12px; letter-spacing: -0.5px; }
+.landing p { margin:0 0 20px; opacity:0.95; }
+.btn {display:inline-block; padding:12px 20px; border-radius:10px; border:none; cursor:pointer; background:var(--accent); color:white; font-weight:600; box-shadow: 0 6px 18px rgba(0,0,0,0.15);}
+
+.app-wrap{display:none; min-height:100vh; padding:28px; display:flex; align-items:flex-start; justify-content:center;}
+.container{width:100%; max-width:980px; background:var(--card-bg); border-radius:14px; padding:22px; box-shadow: var(--shadow); display:grid; grid-template-columns: 1fr 360px; gap:18px;}
+
+.main{padding-right:6px;}
+h2 { margin:0 0 12px; font-size:1.25rem; color:#0f172a; }
+.summary { display:flex; gap:12px; margin-bottom:14px; }
+.tile{ flex:1; background:linear-gradient(180deg, var(--glass), rgba(255,255,255,0.92)); padding:12px; border-radius:10px; text-align:center; box-shadow: 0 4px 12px rgba(2,6,23,0.06);}
+.tile h3 { margin:0; font-size:0.9rem; color:var(--muted) }
+.tile p { margin:6px 0 0; font-weight:700; font-size:1.05rem }
+
+.form { display:flex; gap:10px; margin-bottom:12px; align-items:center; }
+.form .col { flex:1; display:flex; gap:8px; align-items:center; }
+input[type="text"], input[type="number"]{ width:100%; padding:10px 12px; border-radius:8px; border:1px solid #e6edf0; background:white; font-size:0.95rem; }
+.actions{ display:flex; gap:10px; margin-bottom:12px; }
+.actions button{ flex:1; padding:10px; border-radius:8px; border:none; cursor:pointer; font-weight:600; }
+.actions .add-income { background:var(--income); color:white }
+.actions .add-expense { background:var(--expense); color:white }
+.actions .clear-all { background:#374151; color:white }
+
+.transactions { margin-top:6px; border-radius:10px; overflow:hidden; background: #fff; border: 1px solid #eef2f7; }
+.tx-head{ display:flex; padding:10px 12px; background:#fafafa; border-bottom:1px solid #f1f5f9; gap:8px; align-items:center; }
+.tx-head div { font-weight:700; color:#475569; font-size:0.9rem; }
+ul.tx-list { list-style:none; margin:0; padding:0; max-height:340px; overflow:auto; }
+li.tx { display:flex; justify-content:space-between; gap:12px; padding:10px 12px; align-items:center; border-bottom:1px dashed #eef2f7; }
+.tx .meta { display:flex;flex-direction:column; gap:3px; max-width:64%; }
+.tx .meta .desc { font-weight:600; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.tx .meta .date { font-size:0.82rem; color:var(--muted) }
+.amount { font-weight:700; min-width:110px; text-align:right }
+.amount.income { color:var(--income) }
+.amount.expense { color:var(--expense) }
+.tx .actions { display:flex; gap:8px; align-items:center }
+.icon-btn { border:none; background:#f1f5f9; padding:6px 9px; border-radius:8px; cursor:pointer }
+.icon-btn:hover { filter:brightness(.96) }
+
+.side { padding-left:8px; display:flex; flex-direction:column; gap:12px; }
+.card { background:linear-gradient(180deg,#fff,#fbfdff); border-radius:10px; padding:12px; box-shadow: 0 6px 18px rgba(2,6,23,0.04); border:1px solid #eef2f7; }
+
+.home-btn { margin-bottom:12px; background:#0f172a; color:white; font-weight:600; border-radius:10px; padding:10px; cursor:pointer; border:none; }
+
+@media (max-width:900px){
+  .container{ grid-template-columns: 1fr; padding:14px }
+  .app-wrap{ padding:14px }
+  .side { padding-left:0 }
+}
+</style>
 </head>
 <body>
-    <!-- Authentication Screen -->
-    <div id="authScreen" class="auth-container">
-        <div class="auth-card">
-            <h2>Expense Tracker</h2>
-            <div class="auth-tabs">
-                <div class="auth-tab active" onclick="switchAuthTab('login')">Login</div>
-                <div class="auth-tab" onclick="switchAuthTab('register')">Register</div>
-            </div>
-            
-            <form id="loginForm" class="auth-form active">
-                <div class="form-group">
-                    <label for="loginUsername">Username</label>
-                    <input type="text" id="loginUsername" class="form-control" placeholder="Enter your username" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    <span class="spinner" id="loginSpinner" style="display: none;"></span>
-                    Login
-                </button>
-                <div class="switch-auth">
-                    Don't have an account? <a href="#" onclick="switchAuthTab('register')">Register here</a>
-                </div>
-            </form>
-            
-            <form id="registerForm" class="auth-form">
-                <div class="form-group">
-                    <label for="registerUsername">Username</label>
-                    <input type="text" id="registerUsername" class="form-control" placeholder="Choose a username" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerPassword">Password</label>
-                    <input type="password" id="registerPassword" class="form-control" placeholder="Choose a password" required>
-                </div>
-                <div class="form-group">
-                    <label for="registerConfirmPassword">Confirm Password</label>
-                    <input type="password" id="registerConfirmPassword" class="form-control" placeholder="Confirm your password" required>
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    <span class="spinner" id="registerSpinner" style="display: none;"></span>
-                    Register
-                </button>
-                <div class="switch-auth">
-                    Already have an account? <a href="#" onclick="switchAuthTab('login')">Login here</a>
-                </div>
-            </form>
-        </div>
+
+<section class="landing" id="landing">
+  <div class="card">
+    <h1>Expense Tracker</h1>
+    <p>Track income and expenses, see totals, and manage transactions.</p>
+    <div style="margin-top:18px">
+      <button class="btn" id="enter-app-btn">Open App</button>
     </div>
+  </div>
+</section>
 
-    <!-- Main App Screen -->
-    <div id="appScreen" style="display: none;">
-        <!-- App Header -->
-        <header class="app-header">
-            <h1>Expense Tracker</h1>
-            <div class="header-actions">
-                <button class="icon-btn" onclick="showUserMenu()">
-                    <i class="fas fa-user"></i>
-                </button>
-                <button class="icon-btn" onclick="showNotifications()">
-                    <i class="fas fa-bell"></i>
-                </button>
-            </div>
-        </header>
+<main class="app-wrap" id="app-wrap" aria-hidden="true">
+  <div class="container">
+    <!-- Left -->
+    <section class="main">
+      <button class="home-btn" id="go-home-btn">← Go to Home</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <h2>Overview</h2>
+        <div style="color:var(--muted);font-size:0.92rem">LocalStorage saved • Works offline</div>
+      </div>
+      <div class="summary">
+        <div class="tile"><h3>Balance</h3><p id="balance">₹0.00</p></div>
+        <div class="tile"><h3>Total Income</h3><p id="total-income">₹0.00</p></div>
+        <div class="tile"><h3>Total Expense</h3><p id="total-expense">₹0.00</p></div>
+      </div>
+      <div class="card" style="margin-bottom:12px">
+        <div style="margin-bottom:10px;font-weight:700;color:#111">Add transaction</div>
+        <div class="form">
+          <div class="col"><input id="desc" type="text" placeholder="Description (e.g., Salary, Groceries)" maxlength="80" /></div>
+          <div style="width:160px"><input id="amount" type="number" placeholder="Amount" step="0.01" /></div>
+        </div>
+        <div class="actions">
+          <button id="add-income" class="add-income">+ Add Income</button>
+          <button id="add-expense" class="add-expense">− Add Expense</button>
+          <button id="clear-all" class="clear-all" title="Clear all transactions">Clear All</button>
+        </div>
+      </div>
+      <div class="transactions card">
+        <div class="tx-head"><div style="flex:1">Transaction</div><div style="width:110px;text-align:right">Amount</div></div>
+        <ul class="tx-list" id="tx-list"></ul>
+      </div>
+    </section>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Summary Cards -->
-            <div class="summary-cards">
-                <div class="summary-card income">
-                    <h3>Income</h3>
-                    <div class="amount" id="incomeAmount">$0.00</div>
-                </div>
-                <div class="summary-card expenses">
-                    <h3>Expenses</h3>
-                    <div class="amount" id="expensesAmount">$0.00</div>
-                </div>
-                <div class="summary-card balance">
-                    <h3>Balance</h3>
-                    <div class="amount" id="balanceAmount">$0.00</div>
-                </div>
-            </div>
+    <!-- Right: Search / Filter -->
+    <aside class="side">
+      <div class="card">
+        <div style="font-weight:700;margin-bottom:6px">Search / Filter</div>
+        <input type="text" id="search-tx" placeholder="Search description..." style="width:100%;padding:8px;border-radius:6px;border:1px solid #e6edf0;margin-bottom:8px"/>
+        <select id="filter-type" style="width:100%;padding:8px;border-radius:6px;border:1px solid #e6edf0">
+          <option value="all">All Transactions</option>
+          <option value="income">Income</option>
+          <option value="expense">Expense</option>
+        </select>
+      </div>
+      <div class="card" style="text-align:center;color:var(--muted);font-size:0.92rem">
+        <div style="font-weight:700;margin-bottom:6px">Export / Import</div>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <button id="export-json" class="icon-btn">Export JSON</button>
+          <button id="import-json" class="icon-btn">Import JSON</button>
+          <input id="import-file" type="file" accept="application/json" style="display:none" />
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
 
-            <!-- Quick Actions -->
-            <div class="quick-actions">
-                <button class="action-btn" onclick="openAddModal('income')">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Add Income</span>
-                </button>
-                <button class="action-btn" onclick="openAddModal('expense')">
-                    <i class="fas fa-minus-circle"></i>
-                    <span>Add Expense</span>
-                </button>
-                <button class="action-btn" onclick="showReports()">
-                    <i class="fas fa-chart-pie"></i>
-                    <span>Reports</span>
-                </button>
-                <button class="action-btn" onclick="showCategories()">
-                    <i class="fas fa-tags"></i>
-                    <span>Categories</span>
-                </button>
-            </div>
+<script>
+const LS_KEY = 'expense_tracker_transactions_v3';
+const q = sel => document.querySelector(sel);
+const formatCurrency = n => new Intl.NumberFormat('en-IN', { style:'currency', currency:'INR' }).format(n);
 
-            <!-- Recent Transactions -->
-            <div class="section-title">
-                <h2>Recent Transactions</h2>
-                <a href="#" class="view-all" onclick="showAllTransactions()">View All</a>
-            </div>
-            
-            <div class="transactions-list" id="transactionsList">
-                <!-- Transactions will be dynamically added here -->
-                <div class="empty-state">
-                    <i class="fas fa-receipt"></i>
-                    <p>No transactions yet</p>
-                    <p>Add your first transaction to get started</p>
-                </div>
-            </div>
-        </main>
+const landing = q('#landing'), appWrap = q('#app-wrap'), enterBtn = q('#enter-app-btn');
+const descInput = q('#desc'), amountInput = q('#amount');
+const addIncomeBtn = q('#add-income'), addExpenseBtn = q('#add-expense'), clearAllBtn = q('#clear-all');
+const txList = q('#tx-list'), balanceEl = q('#balance'), incomeEl = q('#total-income'), expenseEl = q('#total-expense');
+const exportBtn = q('#export-json'), importBtn = q('#import-json'), importFile = q('#import-file');
+const searchInput = q('#search-tx'), filterSelect = q('#filter-type');
+const goHomeBtn = q('#go-home-btn');
 
-        <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
-            <a href="#" class="nav-item active">
-               
+let transactions = [];
+
+enterBtn.onclick = () => { landing.style.display='none'; appWrap.style.display='flex'; appWrap.setAttribute('aria-hidden','false'); }
+goHomeBtn.onclick = () => { appWrap.style.display='none'; landing.style.display='flex'; appWrap.setAttribute('aria-hidden','true'); }
+
+addIncomeBtn.onclick = () => addTransaction('income');
+addExpenseBtn.onclick = () => addTransaction('expense');
+clearAllBtn.onclick = () => { if(confirm('Clear ALL transactions?')){ transactions=[]; saveRender(); } }
+exportBtn.onclick = () => {
+  const blob = new Blob([JSON.stringify(transactions,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download='expense-data.json'; a.click();
+}
+importBtn.onclick = () => importFile.click();
+importFile.onchange = (e) => {
+  const file = e.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = evt => {
+    try {
+      const imported = JSON.parse(evt.target.result);
+      const valid = imported.filter(it=>it && typeof it.desc==='string' && typeof it.amount==='number' && (it.type==='income'||it.type==='expense'));
+      if(!valid.length){ alert('No valid transactions'); return; }
+      if(confirm(`Import ${valid.length} transactions?`)){ valid.forEach(it=>{ if(!it.date) it.date=new Date().toISOString(); if(!it.id) it.id=Date.now()+Math.floor(Math.random()*999); }); transactions=transactions.concat(valid); saveRender(); alert('Imported successfully'); }
+    } catch(err){ alert('Import failed: '+err.message);}
+  };
+  reader.readAsText(file);
+}
+
+function saveRender(){ localStorage.setItem(LS_KEY,JSON.stringify(transactions)); renderAll(); }
+function load(){ transactions=JSON.parse(localStorage.getItem(LS_KEY)||'[]'); renderAll(); }
+function addTransaction(type){
+  const desc=descInput.value.trim(), amt=parseFloat(amountInput.value);
+  if(!desc){ alert('Enter description'); return; }
+  if(!amt || amt<=0){ alert('Enter valid amount'); return; }
+  transactions.push({id:Date.now(),desc,amount:+amt.toFixed(2),type,date:new Date().toISOString()});
+  descInput.value=''; amountInput.value=''; saveRender();
+}
+function deleteTransaction(id){ if(confirm('Delete this transaction?')){ transactions=transactions.filter(t=>t.id!==id); saveRender(); } }
+
+function renderAll(){
+  // Summary
+  let totalIncome=0,totalExpense=0;
+  transactions.forEach(t=> t.type==='income'?totalIncome+=t.amount:totalExpense+=t.amount);
+  balanceEl.textContent=formatCurrency(totalIncome-totalExpense);
+  incomeEl.textContent=formatCurrency(totalIncome);
+  expenseEl.textContent=formatCurrency(totalExpense);
+
+  // Transactions list with search/filter
+  const filter = filterSelect.value, search = searchInput.value.toLowerCase();
+  const filtered = transactions.filter(t => (filter==='all'||t.type===filter) && t.desc.toLowerCase().includes(search));
+  txList.innerHTML='';
+  if(!filtered.length){ txList.innerHTML='<li class="tx"><div class="meta" style="opacity:0.85">No transactions.</div></li>'; return; }
+
+  filtered.sort((a,b)=>b.date.localeCompare(a.date)).forEach(t=>{
+    const li=document.createElement('li'); li.className='tx';
+    const d=new Date(t.date);
+    li.innerHTML=`<div class="meta"><div class="desc">${t.desc}</div><div class="date">${d.toLocaleString('en-IN',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</div></div>
+    <div style="display:flex;align-items:center;gap:8px"><div class="amount ${t.type}">${t.type==='income'?'+':'−'} ${formatCurrency(t.amount)}</div>
+    <div class="actions"><button class="icon-btn">Delete</button></div></div>`;
+    li.querySelector('.icon-btn').onclick=()=>deleteTransaction(t.id);
+    txList.appendChild(li);
+  });
+}
+
+searchInput.oninput = renderAll;
+filterSelect.onchange = renderAll;
+
+load();
+</script>
+</body>
+</html>
